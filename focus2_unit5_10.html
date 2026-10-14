@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Focus 2 · Unit 5/10 · Review</title>
+<style>
+:root{--green:#2e7d32;--green-d:#1b5e20;--orange:#ef6c00;--orange-d:#e65100;--bg:#f1f8e9;--card:#fff;--border:#a5d6a7;--text:#1a1a2e;--muted:#558b2f;--err:#c62828;--ok:#2e7d32}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;font-size:17px}
+.wrap{max-width:960px;margin:0 auto;padding:12px 16px 40px}
+header{background:linear-gradient(135deg,var(--green),var(--green-d));color:#fff;padding:22px 24px;border-radius:14px;margin-bottom:18px;box-shadow:0 6px 20px rgba(46,125,50,.28)}
+header h1{font-size:1.35rem;margin-bottom:4px}
+header p{opacity:.92;font-size:.95rem}
+.badge{display:inline-block;background:rgba(255,255,255,.22);padding:3px 11px;border-radius:16px;font-size:.82rem;margin-bottom:8px}
+.progress{display:flex;gap:6px;margin:14px 0 18px;flex-wrap:wrap}
+.progress button{flex:1;min-width:70px;padding:8px 4px;border:2px solid var(--border);border-radius:10px;background:#fff;font-size:.78rem;font-weight:600;cursor:pointer;color:var(--muted)}
+.progress button.active{background:var(--green);color:#fff;border-color:var(--green)}
+.progress button.done{background:#c8e6c9;border-color:var(--green)}
+.stage{display:none;background:var(--card);border-radius:14px;padding:24px;margin-bottom:18px;box-shadow:0 3px 14px rgba(0,0,0,.06);border:1px solid var(--border)}
+.stage.on{display:block}
+.stage h2{color:var(--green-d);font-size:1.15rem;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.stage .meta{font-size:.88rem;color:var(--muted);margin-bottom:14px}
+.stage .aim{background:#e8f5e9;border-left:4px solid var(--green);padding:8px 12px;border-radius:0 8px 8px 0;margin-bottom:14px;font-size:.92rem}
+.nav{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+.btn{font-family:inherit;font-size:.95rem;font-weight:600;padding:10px 20px;border:none;border-radius:10px;cursor:pointer}
+.btn-g{background:var(--green);color:#fff}
+.btn-g:hover{background:var(--green-d)}
+.btn-o{background:var(--orange);color:#fff}
+.btn-o:hover{background:var(--orange-d)}
+.btn-sec{background:#e8f5e9;color:var(--muted)}
+.btn-sec:hover{background:#c8e6c9}
+.word-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin:12px 0}
+.word-card{background:#fff3e0;border:1.5px solid #ffcc80;border-radius:10px;padding:10px;text-align:center;cursor:pointer;transition:.15s}
+.word-card:hover,.word-card.on{background:var(--orange);color:#fff;border-color:var(--orange)}
+.word-card .tr{font-size:.8rem;opacity:.85;margin-top:2px}
+.sentence{margin:10px 0;line-height:1.7}
+select,.inp{font-family:inherit;font-size:.92rem;padding:5px 8px;border:2px solid var(--border);border-radius:8px;background:#fff;min-width:100px}
+select:focus,.inp:focus{outline:none;border-color:var(--green)}
+select.ok,.inp.ok{border-color:var(--ok);background:#e8f5e9}
+select.bad,.inp.bad{border-color:var(--err);background:#ffebee}
+.q-block{background:#e8f5e9;border-radius:10px;padding:12px;margin:10px 0;border-left:4px solid var(--green)}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.opts label{display:flex;align-items:center;gap:5px;background:#fff;border:2px solid var(--border);border-radius:8px;padding:6px 11px;cursor:pointer;font-size:.88rem}
+.opts label:hover{border-color:var(--green)}
+.opts label.ok{border-color:var(--ok);background:#e8f5e9}
+.opts label.bad{border-color:var(--err);background:#ffebee}
+.match-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:8px 0}
+.fb{margin-top:10px;padding:10px 14px;border-radius:8px;font-weight:500;display:none}
+.fb.show{display:block}
+.fb.ok{background:#e8f5e9;color:var(--ok);border:1px solid #a5d6a7}
+.fb.bad{background:#fff3e0;color:var(--orange-d);border:1px solid #ffcc80}
+.hint{font-size:.88rem;color:var(--muted);margin-top:4px}
+.speak-card{background:#fff8e1;border:2px solid #ffe082;border-radius:12px;padding:16px;margin:10px 0}
+.speak-card h4{color:var(--orange-d);margin-bottom:6px}
+.timer{font-size:.85rem;color:var(--muted)}
+.tf-row{display:flex;align-items:center;gap:10px;margin:8px 0;flex-wrap:wrap}
+.drag-area{min-height:48px;border:2px dashed var(--border);border-radius:10px;padding:8px;margin:8px 0;display:flex;flex-wrap:wrap;gap:6px;background:#fafafa}
+.chip{background:var(--orange);color:#fff;padding:6px 12px;border-radius:8px;cursor:grab;user-select:none;font-size:.9rem}
+.chip:active{cursor:grabbing}
+.chip.placed{background:var(--green)}
+.vocab-list{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;font-size:.92rem;margin:10px 0}
+@media(max-width:600px){.vocab-list{grid-template-columns:1fr}.progress button{min-width:56px;font-size:.72rem}}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding:12px 0 30px}
+.total-box{text-align:center;padding:20px;border-radius:12px;margin-top:14px;display:none}
+.total-box.show{display:block}
+.total-box.good{background:#e8f5e9;border:2px solid #a5d6a7}
+.total-box.mid{background:#fff8e1;border:2px solid #ffe082}
+.total-box.bad{background:#ffebee;border:2px solid #ef9a9a}
+.big{font-size:2rem;font-weight:800}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="badge">Focus 2 · Unit 5/10 · A2 · 60 min · Pair</div>
+  <h1>FOCUS REVIEW 5 · School life</h1>
+  <p>Vocabulary · Grammar · Reading · Speaking · 20 new words</p>
+</header>
+
+<div class="progress" id="prog"></div>
+
+<!-- STAGE 0 Lead-in -->
+<div class="stage on" id="s0">
+  <h2>🟢 Lead-in</h2>
+  <div class="meta">⏱ 5 min · Aim: activate school vocabulary & interest</div>
+  <div class="aim">Students discuss school memories and preferences in pairs.</div>
+  <div class="speak-card">
+    <h4>Talk in pairs (2 min each)</h4>
+    <p>1. What was your favourite subject last year? Why?</p>
+    <p>2. Have you ever skipped a lesson? What happened?</p>
+    <p>3. Would you like to take a gap year after school? Why / Why not?</p>
+    <p>4. What makes a good school, in your opinion?</p>
+  </div>
+  <p class="hint">🇺🇦 Поговоріть у парах 2 хвилини кожен. Не пишіть — тільки говоріть.</p>
+  <div class="nav"><button class="btn btn-g" onclick="go(1)">Next → Vocabulary</button></div>
+</div>
+
+<!-- STAGE 1 Vocabulary presentation -->
+<div class="stage" id="s1">
+  <h2>📚 Target vocabulary — 20 words</h2>
+  <div class="meta">⏱ 8 min · Aim: present & clarify 20 key words</div>
+  <div class="aim">Students meet the key lexis from Review 5 and check meaning.</div>
+  <p>Tap a word to see the Ukrainian translation and example.</p>
+  <div class="word-grid" id="vocabGrid"></div>
+  <div id="vocabDetail" style="margin-top:12px;padding:12px;background:#e8f5e9;border-radius:10px;display:none"></div>
+  <div class="nav">
+    <button class="btn btn-sec" onclick="go(0)">← Back</button>
+    <button class="btn btn-g" onclick="go(2)">Next → Vocab practice</button>
+  </div>
+</div>
+
+<!-- STAGE 2 Vocab exercises (4) -->
+<div class="stage" id="s2">
+  <h2>✏️ Vocabulary practice (4 exercises)</h2>
+  <div class="meta">⏱ 12 min · Aim: controlled practice of new lexis</div>
+
+  <h3 style="color:var(--orange-d);margin:14px 0 8px">V1 · Match the word to the definition</h3>
+  <div id="v1"></div>
+  <div class="fb" id="fbV1"></div>
+  <button class="btn btn-o" onclick="checkV1()">Check</button>
+  <button class="btn btn-sec" onclick="resetV1()">Reset</button>
+
+  <h3 style="color:var(--orange-d);margin:18px 0 8px">V2 · Choose the correct option</h3>
+  <div id="v2"></div>
+  <div class="fb" id="fbV2"></div>
+  <button class="btn btn-o" onclick="checkV2()">Check</button>
+  <button class="btn btn-sec" onclick="resetV2()">Reset</button>
+
+  <h3 style="color:var(--orange-d);margin:18px 0 8px">V3 · Gap fill — school words</h3>
+  <div id="v3"></div>
+  <div class="fb" id="fbV3"></div>
+  <button class="btn btn-o" onclick="checkV3()">Check</button>
+  <button class="btn btn-sec" onclick="resetV3()">Reset</button>
+
+  <h3 style="color:var(--orange-d);margin:18px 0 8px">V4 · True or False?</h3>
+  <div id="v4"></div>
+  <div class="fb" id="fbV4"></div>
+  <button class="btn btn-o" onclick="checkV4()">Check</button>
+  <button class="btn btn-sec" onclick="resetV4()">Reset</button>
+
+  <div class="nav" style="margin-top:20px">
+    <button class="btn btn-sec" onclick="go(1)">← Back</button>
+    <button class="btn btn-g" onclick="go(3)">Next → Grammar</button>
+  </div>
+</div>
+
+<!-- STAGE 3 Grammar -->
+<div class="stage" id="s3">
+  <h2>📖 Grammar · First Conditional & Relative pronouns</h2>
+  <div class="meta">⏱ 10 min · Aim: review First Conditional + who/which/where</div>
+  <div class="aim">Students complete controlled grammar tasks from the coursebook.</div>
+
+  <h3 style="color:var(--orange-d);margin:10px 0 8px">G1 · First Conditional</h3>
+  <p class="hint">Complete with the correct form of the verbs.</p>
+  <div id="g1"></div>
+  <div class="fb" id="fbG1"></div>
+  <button class="btn btn-o" onclick="checkG1()">Check</button>
+  <button class="btn btn-sec" onclick="resetG1()">Reset</button>
+
+  <h3 style="color:var(--orange-d);margin:18px 0 8px">G2 · Relative pronouns (who / which / where)</h3>
+  <div id="g2"></div>
+  <div class="fb" id="fbG2"></div>
+  <button class="btn btn-o" onclick="checkG2()">Check</button>
+  <button class="btn btn-sec" onclick="resetG2()">Reset</button>
+
+  <h3 style="color:var(--orange-d);margin:18px 0 8px">G3 · Vocabulary & Grammar MCQ (coursebook)</h3>
+  <div id="g3"></div>
+  <div class="fb" id="fbG3"></div>
+  <button class="btn btn-o" onclick="checkG3()">Check</button>
+  <button class="btn btn-sec" onclick="resetG3()">Reset</button>
+
+  <div class="nav" style="margin-top:20px">
+    <button class="btn btn-sec" onclick="go(2)">← Back</button>
+    <button class="btn btn-g" onclick="go(4)">Next → Reading</button>
+  </div>
+</div>
+
+<!-- STAGE 4 Reading -->
+<div class="stage" id="s4">
+  <h2>📰 Reading · A school on every doorstep</h2>
+  <div class="meta">⏱ 12 min · Aim: reading for gist & detail</div>
+  <div class="aim">Students match headings and complete an email about Door Step School.</div>
+
+  <div style="background:#f5f5f5;border-radius:10px;padding:14px;margin:10px 0;font-size:.93rem">
+    <p><strong>1</strong> In India there are 1.4 million children aged 6–11 who do not attend any school. That is why in 1988, two passionate teachers, Ranjani Paranjpe and Bina Lashkari, started a non-formal education project, Door Step School, for fifty children in a small slum in Mumbai. A year later the project became an official educational programme aiming to teach children to at least read and write.</p>
+    <p style="margin-top:8px"><strong>2</strong> At the beginning, the teachers walked from door to door looking for children who did not go to school, speaking to parents and asking them to send the children to their school. They arranged classrooms everywhere: in marketplaces, on pavements, at railway stations and even in a bus.</p>
+    <p style="margin-top:8px"><strong>3</strong> The idea spread very quickly to neighbouring communities. More and more teachers as well as volunteers decided to join the programme. Now, the Door Step School has a team of 1,000 teachers and volunteers across eight districts in India and deals with more than 70,000 students every year.</p>
+    <p style="margin-top:8px"><strong>4</strong> Since 1988, the teaching conditions in the Door Step School have changed a lot. Now, buses called School on Wheels serve as libraries and mobile classrooms with computers, TVs and DVD players. Apart from learning basic skills such as reading, writing and arithmetic, children also have lessons on hygiene or health and safety.</p>
+  </div>
+
+  <h3 style="color:var(--orange-d);margin:14px 0 8px">R1 · Match the headings (A–F) to paragraphs 1–4</h3>
+  <p class="hint">There are two extra headings.</p>
+  <div id="r1"></div>
+  <div class="fb" id="fbR1"></div>
+  <button class="btn btn-o" onclick="checkR1()">Check</button>
+  <button class="btn btn-sec" onclick="resetR1()">Reset</button>
+
+  <h3 style="color:var(--orange-d);margin:18px 0 8px">R2 · Complete the email</h3>
+  <div id="r2"></div>
+  <div class="fb" id="fbR2"></div>
+  <button class="btn btn-o" onclick="checkR2()">Check</button>
+  <button class="btn btn-sec" onclick="resetR2()">Reset</button>
+
+  <div class="nav" style="margin-top:20px">
+    <button class="btn btn-sec" onclick="go(3)">← Back</button>
+    <button class="btn btn-g" onclick="go(5)">Next → Speaking</button>
+  </div>
+</div>
+
+<!-- STAGE 5 Speaking -->
+<div class="stage" id="s5">
+  <h2>🗣️ Speaking · Free practice</h2>
+  <div class="meta">⏱ 10 min · Aim: personalise language & speak fluently</div>
+  <div class="aim">Students discuss school, gap years and learning in pairs / groups.</div>
+
+  <div class="speak-card">
+    <h4>Task 1 · Pair discussion (4 min)</h4>
+    <p>1. What are the advantages of using computers for learning?</p>
+    <p>2. Should Science be the most important subject at school? Why / Why not?</p>
+    <p>3. Would you prefer a rigid timetable or more freedom? Explain.</p>
+  </div>
+  <div class="speak-card">
+    <h4>Task 2 · Role-play (4 min)</h4>
+    <p><strong>Student A:</strong> You want to take a gap year. Convince your parent.</p>
+    <p><strong>Student B:</strong> You are the parent. You are not sure. Ask questions and decide.</p>
+    <p class="hint">Use: If I take a gap year… / I’d rather… / I’m thinking of…</p>
+  </div>
+  <div class="speak-card">
+    <h4>Task 3 · Mini-presentation (2 min each)</h4>
+    <p>Describe the best school you can imagine. Talk about: subjects, teachers, buildings, rules, free time.</p>
+  </div>
+  <p class="hint">🇺🇦 Говоріть англійською. Викладач слухає і дає feedback наприкінці.</p>
+  <div class="nav">
+    <button class="btn btn-sec" onclick="go(4)">← Back</button>
+    <button class="btn btn-g" onclick="go(6)">Next → Score</button>
+  </div>
+</div>
+
+<!-- STAGE 6 Score -->
+<div class="stage" id="s6">
+  <h2>📊 Lesson score & reflection</h2>
+  <div class="meta">⏱ 3 min</div>
+  <p>Click the button to calculate your score from all auto-checked exercises.</p>
+  <button class="btn btn-o" style="margin:12px 0" onclick="calcAll()">Calculate total score</button>
+  <div class="total-box" id="totalBox"></div>
+  <div class="speak-card" style="margin-top:16px">
+    <h4>Reflection</h4>
+    <p>1. Which new words will you remember?</p>
+    <p>2. What was the most useful part of the lesson?</p>
+    <p>3. What do you want to practise more?</p>
+  </div>
+  <div class="nav">
+    <button class="btn btn-sec" onclick="go(5)">← Back</button>
+    <button class="btn btn-g" onclick="location.reload()">🔄 Start again</button>
+  </div>
+</div>
+
+<footer>Focus 2 · Unit 5/10 · Review 5 · A2 · CELTA framework · Green & Orange</footer>
+</div>
+
+<script>
+/* ========== DATA OBJECT — edit content here ========== */
+const DATA = {
+  stages: ['Lead-in','Vocab','Vocab practice','Grammar','Reading','Speaking','Score'],
+  vocab: [
+    {w:'classmate',tr:'однокласник',ex:'My classmates are very friendly.'},
+    {w:'compulsory',tr:'обов’язковий',ex:'Maths is a compulsory subject.'},
+    {w:'skip',tr:'пропускати (урок)',ex:'Don’t skip lessons!'},
+    {w:'drop',tr:'кинути (предмет)',ex:'He dropped Physics last year.'},
+    {w:'encourage',tr:'заохочувати',ex:'Teachers should encourage students.'},
+    {w:'struggle',tr:'мати труднощі',ex:'She struggles with Maths.'},
+    {w:'term',tr:'семестр / чверть',ex:'The second term was hard.'},
+    {w:'mark',tr:'оцінка',ex:'He got a lot of poor marks.'},
+    {w:'homework',tr:'домашнє завдання',ex:'I have a lot of homework.'},
+    {w:'gap year',tr:'рік перерви (після школи)',ex:'I’m thinking of taking a gap year.'},
+    {w:'timetable',tr:'розклад',ex:'Our timetable is very rigid.'},
+    {w:'volunteer',tr:'волонтер',ex:'Many volunteers help the school.'},
+    {w:'slum',tr:'нетрі',ex:'The school started in a small slum.'},
+    {w:'pavement',tr:'тротуар',ex:'They taught on the pavement.'},
+    {w:'hygiene',tr:'гігієна',ex:'Children learn about hygiene.'},
+    {w:'rigid',tr:'жорсткий',ex:'A rigid timetable is stressful.'},
+    {w:'adventurous',tr:'сміливий / шукач пригод',ex:'I’d rather do something more adventurous.'},
+    {w:'convince',tr:'переконати',ex:'Can you convince your parents?'},
+    {w:'relative',tr:'відносний (займенник)',ex:'Who, which, where are relative pronouns.'},
+    {w:'conditional',tr:'умовний (спосіб)',ex:'First Conditional: If + Present, will…'}
+  ],
+  v1: [
+    {q:'A year off between school and university',a:'gap year',opts:['gap year','timetable','term','mark']},
+    {q:'A person in the same class as you',a:'classmate',opts:['volunteer','classmate','teacher','parent']},
+    {q:'Something you must do / study',a:'compulsory',opts:['optional','rigid','compulsory','adventurous']},
+    {q:'To stop going to a lesson',a:'skip',opts:['drop','skip','encourage','struggle']},
+    {q:'A schedule of lessons',a:'timetable',opts:['homework','timetable','mark','term']}
+  ],
+  v2: [
+    {q:'It is now harder for new college ___ to find a good job.',a:'graduates',opts:['classmates','experts','graduates']},
+    {q:'I have to attend PE classes because PE is a(n) ___ subject.',a:'compulsory',opts:['academic','after-school','compulsory']},
+    {q:'Josh ___ the Science class again. Is he going to get into trouble?',a:'skipped',opts:['skipped','dropped','took']},
+    {q:'My father used to ___ me to study harder.',a:'encourage',opts:['bully','encourage','struggle']},
+    {q:'If they change the ___ , we’ll start lessons at 8.00 every day.',a:'timetable',opts:['curriculum','timetable','academic']}
+  ],
+  v3: [
+    {q:'The second ___ (one part of an academic year) was much worse.',a:'term'},
+    {q:'He got a lot of poor ___ (marks) and he didn’t pass three tests.',a:'marks'},
+    {q:'He says he got exhausted by all the ___ (work that a student does at school or at home).',a:'homework'},
+    {q:'If he doesn’t concentrate on learning and ___ (didn’t attend) the classes…',a:'misses'},
+    {q:'…he has to start ___ (preparing for exams) now.',a:'revising'}
+  ],
+  v4: [
+    {q:'A gap year is a year you take off before or after university.',a:true},
+    {q:'“Skip a lesson” means to do extra work after school.',a:false},
+    {q:'Compulsory subjects are the ones you can choose not to study.',a:false},
+    {q:'Door Step School started in a small slum in Mumbai.',a:true},
+    {q:'Relative pronouns include who, which and where.',a:true}
+  ],
+  g1: [
+    {q:'If I ___ (take) a gap year, I ___ (get) a lot of experience.',a1:'take',a2:'will get'},
+    {q:'If Stella ___ (not hurry), we ___ (miss) the first lesson.',a1:"doesn't hurry",a2:'will miss'},
+    {q:'___ (your parents / get) angry if you ___ (not get) into university?',a1:'Will your parents get',a2:"don't get"},
+    {q:'He ___ (not pass) his exams if he ___ (not take) extra lessons.',a1:"won't pass",a2:"doesn't take"},
+    {q:'I ___ (not help) you with Maths if you ___ (not help) me with English.',a1:"won't help",a2:"don't help"}
+  ],
+  g2: [
+    {q:'Any student ___ hasn’t finished their homework, please see me after the lesson.',a:'who'},
+    {q:'This is the canteen ___ we eat our lunch.',a:'where'},
+    {q:'Students ___ only revise the night before an exam don’t usually get good grades.',a:'who'},
+    {q:'It was a gap year ___ seemed to last forever.',a:'which'},
+    {q:'There are lots of schools in the world ___ don’t have water or electricity.',a:'which'},
+    {q:'Oxford was the university ___ she did her degree.',a:'where'}
+  ],
+  g3: [
+    {q:'You’ll learn more if you pay attention / tuition fees / the bills in classes.',a:'pay attention'},
+    {q:'If they change the curriculum / timetable / academic subjects, we’ll start at 8.00.',a:'timetable'},
+    {q:'My father used to bully / encourage / struggle with Maths…',a:'encourage'}
+  ],
+  r1: [
+    {n:1,a:'B',opts:['A Growing numbers of teachers and students','B Trying to solve the literacy problem','C Teaching in the slums around India','D Modern classrooms and new subjects','E Keeping children safe and healthy','F Teaching in strange places']},
+    {n:2,a:'F',opts:['A Growing numbers of teachers and students','B Trying to solve the literacy problem','C Teaching in the slums around India','D Modern classrooms and new subjects','E Keeping children safe and healthy','F Teaching in strange places']},
+    {n:3,a:'A',opts:['A Growing numbers of teachers and students','B Trying to solve the literacy problem','C Teaching in the slums around India','D Modern classrooms and new subjects','E Keeping children safe and healthy','F Teaching in strange places']},
+    {n:4,a:'D',opts:['A Growing numbers of teachers and students','B Trying to solve the literacy problem','C Teaching in the slums around India','D Modern classrooms and new subjects','E Keeping children safe and healthy','F Teaching in strange places']}
+  ],
+  r2: [
+    {q:'The idea came from two teachers ___ wanted children…',a:'who'},
+    {q:'…in 1989 became ___ official educational initiative…',a:'an'},
+    {q:'…the numbers of teachers ___ involved…',a:'who are'},
+    {q:'…teaching conditions are ___ those in 1988.',a:'better than'}
+  ]
+};
+
+/* ========== STATE ========== */
+const tries = {};
+const scores = {};
+
+/* ========== NAV ========== */
+function go(n){
+  document.querySelectorAll('.stage').forEach(s=>s.classList.remove('on'));
+  document.getElementById('s'+n).classList.add('on');
+  document.querySelectorAll('#prog button').forEach((b,i)=>{
+    b.classList.toggle('active',i===n);
+    if(i<n) b.classList.add('done');
+  });
+  window.scrollTo(0,0);
+}
+(function buildProg(){
+  const p=document.getElementById('prog');
+  DATA.stages.forEach((name,i)=>{
+    const b=document.createElement('button');
+    b.textContent=(i+1)+'. '+name;
+    b.onclick=()=>go(i);
+    if(i===0) b.classList.add('active');
+    p.appendChild(b);
+  });
+})();
+
+/* ========== VOCAB GRID ========== */
+(function(){
+  const g=document.getElementById('vocabGrid');
+  DATA.vocab.forEach((v,i)=>{
+    const d=document.createElement('div');
+    d.className='word-card';
+    d.innerHTML='<strong>'+v.w+'</strong>';
+    d.onclick=()=>{
+      document.querySelectorAll('.word-card').forEach(c=>c.classList.remove('on'));
+      d.classList.add('on');
+      const det=document.getElementById('vocabDetail');
+      det.style.display='block';
+      det.innerHTML='<strong>'+v.w+'</strong> — '+v.tr+'<br><em>'+v.ex+'</em>';
+    };
+    g.appendChild(d);
+  });
+})();
+
+/* ========== HELPERS ========== */
+function sel(id,opts,val){
+  let h='<select id="'+id+'"><option value="">—</option>';
+  opts.forEach(o=>h+='<option value="'+o+'">'+o+'</option>');
+  return h+'</select>';
+}
+function showFb(id,c,t,hint){
+  const fb=document.getElementById(id);
+  fb.classList.add('show');
+  if(c===t){fb.className='fb show ok';fb.textContent='✅ Great! '+c+' / '+t;}
+  else{fb.className='fb show bad';fb.innerHTML='Score: <strong>'+c+' / '+t+'</strong>. '+(hint||'Try again — think about the context.');}
+}
+function mark(el,ok){el.classList.remove('ok','bad');el.classList.add(ok?'ok':'bad');}
+
+/* ========== V1 Match ========== */
+(function(){
+  const box=document.getElementById('v1');
+  DATA.v1.forEach((item,i)=>{
+    box.innerHTML+='<div class="sentence">'+(i+1)+'. '+item.q+' '+sel('v1_'+i,item.opts)+'</div>';
+  });
+})();
+function checkV1(){
+  let c=0;const t=DATA.v1.length;
+  DATA.v1.forEach((item,i)=>{
+    const el=document.getElementById('v1_'+i);
+    const ok=el.value===item.a;
+    mark(el,ok);if(ok)c++;
+  });
+  scores.v1={c,t};showFb('fbV1',c,t,'Hint: look at the definition carefully.');
+}
+function resetV1(){DATA.v1.forEach((_,i)=>{const e=document.getElementById('v1_'+i);e.value='';e.classList.remove('ok','bad');});document.getElementById('fbV1').className='fb';scores.v1=null;}
+
+/* ========== V2 MCQ ========== */
+(function(){
+  const box=document.getElementById('v2');
+  DATA.v2.forEach((item,i)=>{
+    box.innerHTML+='<div class="sentence">'+(i+1)+'. '+item.q.replace('___',' '+sel('v2_'+i,item.opts)+' ')+'</div>';
+  });
+})();
+function checkV2(){
+  let c=0;const t=DATA.v2.length;
+  DATA.v2.forEach((item,i)=>{const el=document.getElementById('v2_'+i);const ok=el.value===item.a;mark(el,ok);if(ok)c++;});
+  scores.v2={c,t};showFb('fbV2',c,t,'Hint: these are typical school collocations.');
+}
+function resetV2(){DATA.v2.forEach((_,i)=>{const e=document.getElementById('v2_'+i);e.value='';e.classList.remove('ok','bad');});document.getElementById('fbV2').className='fb';scores.v2=null;}
+
+/* ========== V3 Gap ========== */
+(function(){
+  const box=document.getElementById('v3');
+  const opts=['term','marks','homework','misses','revising','timetable','gap year'];
+  DATA.v3.forEach((item,i)=>{
+    box.innerHTML+='<div class="sentence">'+(i+1)+'. '+item.q.replace('___',' '+sel('v3_'+i,opts)+' ')+'</div>';
+  });
+})();
+function checkV3(){
+  let c=0;const t=DATA.v3.length;
+  DATA.v3.forEach((item,i)=>{const el=document.getElementById('v3_'+i);const ok=el.value===item.a;mark(el,ok);if(ok)c++;});
+  scores.v3={c,t};showFb('fbV3',c,t,'Hint: the words in brackets explain the meaning.');
+}
+function resetV3(){DATA.v3.forEach((_,i)=>{const e=document.getElementById('v3_'+i);e.value='';e.classList.remove('ok','bad');});document.getElementById('fbV3').className='fb';scores.v3=null;}
+
+/* ========== V4 T/F ========== */
+(function(){
+  const box=document.getElementById('v4');
+  DATA.v4.forEach((item,i)=>{
+    box.innerHTML+='<div class="tf-row">'+(i+1)+'. '+item.q+' <select id="v4_'+i+'"><option value="">—</option><option value="true">True</option><option value="false">False</option></select></div>';
+  });
+})();
+function checkV4(){
+  let c=0;const t=DATA.v4.length;
+  DATA.v4.forEach((item,i)=>{const el=document.getElementById('v4_'+i);const ok=el.value===String(item.a);mark(el,ok);if(ok)c++;});
+  scores.v4={c,t};showFb('fbV4',c,t,'Hint: re-read the definitions of the key words.');
+}
+function resetV4(){DATA.v4.forEach((_,i)=>{const e=document.getElementById('v4_'+i);e.value='';e.classList.remove('ok','bad');});document.getElementById('fbV4').className='fb';scores.v4=null;}
+
+/* ========== G1 First Conditional ========== */
+(function(){
+  const box=document.getElementById('g1');
+  DATA.g1.forEach((item,i)=>{
+    box.innerHTML+='<div class="sentence">'+(i+1)+'. '+item.q.replace('___',' <input class="inp" id="g1a_'+i+'" style="width:110px"> ').replace('___',' <input class="inp" id="g1b_'+i+'" style="width:110px"> ')+'</div>';
+  });
+})();
+function checkG1(){
+  let c=0;const t=DATA.g1.length*2;
+  DATA.g1.forEach((item,i)=>{
+    const e1=document.getElementById('g1a_'+i),e2=document.getElementById('g1b_'+i);
+    const ok1=e1.value.trim().toLowerCase()===item.a1.toLowerCase();
+    const ok2=e2.value.trim().toLowerCase()===item.a2.toLowerCase();
+    mark(e1,ok1);mark(e2,ok2);if(ok1)c++;if(ok2)c++;
+  });
+  scores.g1={c,t};showFb('fbG1',c,t,'Hint: If + Present Simple, will + infinitive.');
+}
+function resetG1(){DATA.g1.forEach((_,i)=>{['g1a_','g1b_'].forEach(p=>{const e=document.getElementById(p+i);e.value='';e.classList.remove('ok','bad');});});document.getElementById('fbG1').className='fb';scores.g1=null;}
+
+/* ========== G2 Relative ========== */
+(function(){
+  const box=document.getElementById('g2');
+  const opts=['who','which','where'];
+  DATA.g2.forEach((item,i)=>{
+    box.innerHTML+='<div class="sentence">'+(i+1)+'. '+item.q.replace('___',' '+sel('g2_'+i,opts)+' ')+'</div>';
+  });
+})();
+function checkG2(){
+  let c=0;const t=DATA.g2.length;
+  DATA.g2.forEach((item,i)=>{const el=document.getElementById('g2_'+i);const ok=el.value===item.a;mark(el,ok);if(ok)c++;});
+  scores.g2={c,t};showFb('fbG2',c,t,'Hint: who = people, which = things, where = places.');
+}
+function resetG2(){DATA.g2.forEach((_,i)=>{const e=document.getElementById('g2_'+i);e.value='';e.classList.remove('ok','bad');});document.getElementById('fbG2').className='fb';scores.g2=null;}
+
+/* ========== G3 MCQ ========== */
+(function(){
+  const box=document.getElementById('g3');
+  DATA.g3.forEach((item,i)=>{
+    box.innerHTML+='<div class="sentence">'+(i+1)+'. '+item.q+' '+sel('g3_'+i,item.opts?item.opts:item.q.split(' / ').map(s=>s.trim()))+'</div>';
+  });
+})();
+function checkG3(){
+  let c=0;const t=DATA.g3.length;
+  DATA.g3.forEach((item,i)=>{const el=document.getElementById('g3_'+i);const ok=el.value===item.a;mark(el,ok);if(ok)c++;});
+  scores.g3={c,t};showFb('fbG3',c,t);
+}
+function resetG3(){DATA.g3.forEach((_,i)=>{const e=document.getElementById('g3_'+i);e.value='';e.classList.remove('ok','bad');});document.getElementById('fbG3').className='fb';scores.g3=null;}
+
+/* ========== R1 Match headings ========== */
+(function(){
+  const box=document.getElementById('r1');
+  const letters=['A','B','C','D','E','F'];
+  DATA.r1.forEach((item,i)=>{
+    let opts=letters.map(l=>l);
+    box.innerHTML+='<div class="sentence">Paragraph '+item.n+': '+sel('r1_'+i,opts)+'</div>';
+  });
+  box.innerHTML+='<p class="hint" style="margin-top:8px">A Growing numbers… · B Trying to solve the literacy problem · C Teaching in the slums… · D Modern classrooms… · E Keeping children safe… · F Teaching in strange places</p>';
+})();
+function checkR1(){
+  let c=0;const t=DATA.r1.length;
+  DATA.r1.forEach((item,i)=>{const el=document.getElementById('r1_'+i);const ok=el.value===item.a;mark(el,ok);if(ok)c++;});
+  scores.r1={c,t};showFb('fbR1',c,t,'Hint: read the first and last sentence of each paragraph.');
+}
+function resetR1(){DATA.r1.forEach((_,i)=>{const e=document.getElementById('r1_'+i);e.value='';e.classList.remove('ok','bad');});document.getElementById('fbR1').className='fb';scores.r1=null;}
+
+/* ========== R2 Email gaps ========== */
+(function(){
+  const box=document.getElementById('r2');
+  const opts=['who','an','who are','better than','from','in','the','a'];
+  DATA.r2.forEach((item,i)=>{
+    box.innerHTML+='<div class="sentence">'+(i+1)+'. '+item.q.replace('___',' '+sel('r2_'+i,opts)+' ')+'</div>';
+  });
+})();
+function checkR2(){
+  let c=0;const t=DATA.r2.length;
+  DATA.r2.forEach((item,i)=>{const el=document.getElementById('r2_'+i);const ok=el.value===item.a;mark(el,ok);if(ok)c++;});
+  scores.r2={c,t};showFb('fbR2',c,t,'Hint: max 3 words; think about relative pronouns and articles.');
+}
+function resetR2(){DATA.r2.forEach((_,i)=>{const e=document.getElementById('r2_'+i);e.value='';e.classList.remove('ok','bad');});document.getElementById('fbR2').className='fb';scores.r2=null;}
+
+/* ========== TOTAL ========== */
+function calcAll(){
+  // auto-check any unchecked
+  if(!scores.v1)checkV1();if(!scores.v2)checkV2();if(!scores.v3)checkV3();if(!scores.v4)checkV4();
+  if(!scores.g1)checkG1();if(!scores.g2)checkG2();if(!scores.g3)checkG3();
+  if(!scores.r1)checkR1();if(!scores.r2)checkR2();
+  let total=0,max=0;
+  const keys=['v1','v2','v3','v4','g1','g2','g3','r1','r2'];
+  const labels=['V1 Match','V2 Choose','V3 Gap fill','V4 True/False','G1 First Cond.','G2 Relative','G3 MCQ','R1 Headings','R2 Email'];
+  let rows='';
+  keys.forEach((k,i)=>{
+    const s=scores[k]||{c:0,t:0};
+    total+=s.c;max+=s.t;
+    rows+='<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px dashed #ccc"><span>'+labels[i]+'</span><span>'+s.c+' / '+s.t+'</span></div>';
+  });
+  const pct=max?Math.round(total/max*100):0;
+  const box=document.getElementById('totalBox');
+  let cls=pct>=80?'good':pct>=50?'mid':'bad';
+  let msg=pct>=80?'Excellent work! 🎉':pct>=50?'Good effort — review the tricky parts.':'Keep practising — you can do it!';
+  box.className='total-box show '+cls;
+  box.innerHTML='<div>'+msg+'</div><div class="big">'+total+' / '+max+'</div><div>'+pct+'%</div><div style="max-width:360px;margin:12px auto 0;text-align:left;font-size:.92rem">'+rows+'</div>';
+}
+</script>
+</body>
+</html>
