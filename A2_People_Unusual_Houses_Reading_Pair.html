@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>People who don’t live in traditional houses | A2 Pair</title>
+<style>
+  :root {
+    --green: #2E7D32;
+    --green-light: #4CAF50;
+    --green-dark: #1B5E20;
+    --orange: #F57C00;
+    --orange-light: #FF9800;
+    --orange-dark: #E65100;
+    --bg: #F5F7FA;
+    --text: #212121;
+    --muted: #616161;
+    --border: #E0E0E0;
+    --success: #2E7D32;
+    --error: #C62828;
+    --radius: 12px;
+    --shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    font-size: 17px;
+    min-height: 100vh;
+  }
+  .app { max-width: 900px; margin: 0 auto; padding: 12px 16px 90px; }
+  header {
+    background: linear-gradient(135deg, var(--green-dark), var(--green));
+    color: white;
+    padding: 18px 22px;
+    border-radius: 0 0 var(--radius) var(--radius);
+    margin: -12px -16px 18px;
+    box-shadow: var(--shadow);
+  }
+  header h1 { font-size: 1.35rem; margin-bottom: 4px; }
+  header .meta { font-size: 0.9rem; opacity: 0.92; }
+  .progress-wrap {
+    background: rgba(255,255,255,0.22);
+    border-radius: 99px;
+    height: 9px;
+    margin-top: 12px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    background: var(--orange);
+    width: 0%;
+    transition: width 0.4s ease;
+    border-radius: 99px;
+  }
+  .nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--bg);
+    padding: 8px 0;
+  }
+  .nav button {
+    flex: 1 1 auto;
+    min-width: 78px;
+    padding: 9px 6px;
+    border: 2px solid var(--border);
+    background: white;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--muted);
+  }
+  .nav button.active { background: var(--green); color: white; border-color: var(--green); }
+  .nav button.done { border-color: var(--green-light); color: var(--green); }
+  .stage { display: none; animation: fadeIn 0.3s ease; }
+  .stage.active { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+  }
+  .stage-header {
+    background: white;
+    border-left: 6px solid var(--orange);
+    padding: 14px 16px;
+    border-radius: var(--radius);
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+  }
+  .stage-header h2 { color: var(--green-dark); font-size: 1.18rem; margin-bottom: 4px; }
+  .stage-header .aim { color: var(--muted); font-size: 0.9rem; }
+  .stage-header .time {
+    display: inline-block;
+    background: var(--orange-light);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 99px;
+    margin-top: 7px;
+  }
+  .card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+  }
+  .card h3 { color: var(--green); margin-bottom: 10px; font-size: 1.08rem; }
+  .hint-ua {
+    background: #FFF8E1;
+    border-left: 4px solid var(--orange);
+    padding: 8px 12px;
+    margin: 8px 0 12px;
+    font-size: 0.87rem;
+    color: #5D4037;
+    border-radius: 0 8px 8px 0;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-primary { background: var(--green); color: white; }
+  .btn-orange { background: var(--orange); color: white; }
+  .btn-outline { background: white; border: 2px solid var(--green); color: var(--green); }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .vocab-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+  }
+  .vocab-item {
+    background: #E8F5E9;
+    border-radius: 10px;
+    padding: 12px;
+    border: 1px solid #C8E6C9;
+  }
+  .vocab-item .word { font-weight: 700; color: var(--green-dark); font-size: 1.02rem; }
+  .vocab-item .def { font-size: 0.88rem; margin: 3px 0; }
+  .vocab-item .ex { font-size: 0.84rem; color: var(--muted); font-style: italic; }
+  .reading-text {
+    background: #FFFDE7;
+    border-radius: 10px;
+    padding: 14px;
+    line-height: 1.7;
+    font-size: 0.98rem;
+  }
+  .reading-text h4 { color: var(--orange-dark); margin: 12px 0 6px; font-size: 1.05rem; }
+  .house-card {
+    background: #F5F5F5;
+    border-radius: 10px;
+    padding: 12px;
+    margin: 10px 0;
+    border-left: 5px solid var(--orange);
+  }
+  .q-num {
+    display: inline-block;
+    background: var(--green);
+    color: white;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 24px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    margin-right: 7px;
+  }
+  .feedback {
+    margin-top: 7px;
+    padding: 8px 11px;
+    border-radius: 8px;
+    font-weight: 600;
+    display: none;
+    font-size: 0.9rem;
+  }
+  .feedback.correct { background: #E8F5E9; color: var(--success); display: block; }
+  .feedback.wrong { background: #FFEBEE; color: var(--error); display: block; }
+  .feedback.hint { background: #FFF8E1; color: #F57F17; display: block; }
+  .mc-option {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 10px 13px;
+    margin: 5px 0;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    background: white;
+    font-size: 0.93rem;
+    cursor: pointer;
+  }
+  .mc-option.selected { border-color: var(--orange); background: #FFF3E0; }
+  .mc-option.correct-ans { border-color: var(--success); background: #E8F5E9; }
+  .mc-option.wrong-ans { border-color: var(--error); background: #FFEBEE; }
+  .gap-input {
+    border: none;
+    border-bottom: 2px solid var(--orange);
+    background: #FFF8E1;
+    padding: 3px 7px;
+    font-size: 1rem;
+    min-width: 100px;
+    text-align: center;
+    border-radius: 4px;
+  }
+  .match-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  @media (max-width: 560px) { .match-grid { grid-template-columns: 1fr; } }
+  .match-item {
+    padding: 10px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    background: white;
+    user-select: none;
+    font-size: 0.9rem;
+  }
+  .match-item.selected { border-color: var(--orange); background: #FFF3E0; }
+  .match-item.matched { border-color: var(--success); background: #E8F5E9; pointer-events: none; }
+  .match-item.wrong-temp { border-color: var(--error); background: #FFEBEE; }
+  .drag-zone {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0;
+    min-height: 46px;
+    padding: 9px;
+    background: #F5F5F5;
+    border-radius: 8px;
+    border: 2px dashed var(--border);
+  }
+  .drag-item {
+    background: var(--green);
+    color: white;
+    padding: 8px 13px;
+    border-radius: 8px;
+    cursor: grab;
+    user-select: none;
+    font-weight: 600;
+    touch-action: none;
+    font-size: 0.9rem;
+  }
+  .drop-slot {
+    display: inline-block;
+    min-width: 90px;
+    min-height: 38px;
+    border: 2px dashed var(--orange);
+    border-radius: 8px;
+    margin: 0 3px;
+    vertical-align: middle;
+    background: #FFF8E1;
+    text-align: center;
+    line-height: 34px;
+  }
+  .drop-slot.filled { border-style: solid; background: #E8F5E9; }
+  .order-bank {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 8px 0;
+    padding: 9px;
+    background: #F5F5F5;
+    border-radius: 8px;
+  }
+  .order-word {
+    background: white;
+    border: 2px solid var(--green);
+    padding: 6px 11px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    user-select: none;
+    font-size: 0.9rem;
+  }
+  .order-word.used { opacity: 0.35; pointer-events: none; }
+  .order-sentence {
+    min-height: 44px;
+    padding: 9px;
+    border: 2px dashed var(--orange);
+    border-radius: 8px;
+    background: #FFF8E1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+  }
+  .tf-btn {
+    padding: 10px 22px;
+    margin: 4px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    background: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .tf-btn.selected-true { border-color: var(--success); background: #E8F5E9; }
+  .tf-btn.selected-false { border-color: var(--error); background: #FFEBEE; }
+  .speak-card {
+    background: linear-gradient(135deg, #E8F5E9, #FFF3E0);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 11px;
+    border: 2px solid var(--green-light);
+  }
+  .speak-card .prompt { font-size: 1rem; font-weight: 600; color: var(--green-dark); margin-bottom: 5px; }
+  .speak-card .timer-hint { font-size: 0.85rem; color: var(--muted); }
+  .footer-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: white;
+    border-top: 1px solid var(--border);
+    padding: 11px 14px;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    z-index: 100;
+    box-shadow: 0 -3px 10px rgba(0,0,0,0.06);
+  }
+  .footer-nav .btn { flex: 1; justify-content: center; }
+  .restart-btn {
+    position: fixed;
+    top: 10px; right: 10px;
+    z-index: 200;
+    background: var(--orange);
+    color: white;
+    border: none;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+  }
+  .word-bank {
+    background: #E8F5E9;
+    padding: 9px;
+    border-radius: 8px;
+    margin: 8px 0;
+    font-weight: 600;
+    line-height: 1.7;
+    font-size: 0.9rem;
+  }
+  .hidden { display: none !important; }
+  @media (max-width: 500px) {
+    body { font-size: 15.5px; }
+    header h1 { font-size: 1.15rem; }
+    .nav button { font-size: 0.7rem; padding: 7px 4px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <button class="restart-btn" onclick="restartLesson()" title="Start again">↻</button>
+
+  <header>
+    <h1>People who don’t live in traditional houses</h1>
+    <div class="meta">Reading · A2 · 12 years · Pair · 60 min · CELTA-coded</div>
+    <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+  </header>
+
+  <nav class="nav" id="stageNav"></nav>
+  <div id="stagesContainer"></div>
+</div>
+
+<div class="footer-nav">
+  <button class="btn btn-outline" id="prevBtn" onclick="changeStage(-1)">← Previous</button>
+  <button class="btn btn-primary" id="nextBtn" onclick="changeStage(1)">Next →</button>
+</div>
+
+<script>
+/* ============================================================
+   LESSON DATA – edit only this object
+   ============================================================ */
+const lessonData = {
+  title: "People who don’t live in traditional houses",
+  level: "A2",
+  age: 12,
+  format: "pair",
+  duration: 60,
+
+  stages: [
+    { id: "leadin", name: "Lead-in", aim: "Activate interest in unusual homes and discuss advantages/disadvantages.", time: "7 min" },
+    { id: "vocab", name: "Vocabulary", aim: "Present and practise 20 key words about places and homes.", time: "10 min" },
+    { id: "reading", name: "Reading", aim: "Read about five unusual ways of living and check understanding.", time: "12 min" },
+    { id: "controlled", name: "Controlled Practice", aim: "Practise new vocabulary and reading details with accuracy.", time: "10 min" },
+    { id: "semicontrolled", name: "Semi-controlled", aim: "Practise language in guided tasks.", time: "8 min" },
+    { id: "production", name: "Free Practice", aim: "Speak freely about unusual homes and personal preferences.", time: "10 min" },
+    { id: "summary", name: "Summary", aim: "Review key words and ideas.", time: "3 min" }
+  ],
+
+  vocab: [
+    { word: "treehouse", def: "a house built in the branches of a tree", ex: "The Korowai people live in treehouses.", ua: "будиночок на дереві" },
+    { word: "underground", def: "under the ground", ex: "They live in underground homes.", ua: "підземний" },
+    { word: "volcano", def: "a mountain that can explode with fire and smoke", ex: "The island has an active volcano.", ua: "вулкан" },
+    { word: "island", def: "a piece of land with water all around it", ex: "They live on a small island.", ua: "острів" },
+    { word: "cave", def: "a large hole in a mountain or under the ground", ex: "People lived in caves long ago.", ua: "печера" },
+    { word: "stilts", def: "long poles that hold a house above the water or ground", ex: "Their houses stand on stilts.", ua: "палі / стовпи" },
+    { word: "rainforest", def: "a thick forest in a hot, wet place", ex: "The Korowai live in the rainforest.", ua: "тропічний ліс" },
+    { word: "desert", def: "a very dry place with little rain", ex: "Coober Pedy is in the desert.", ua: "пустеля" },
+    { word: "tribe", def: "a group of people who live together and share the same culture", ex: "The Korowai are a tribe in Indonesia.", ua: "плем’я" },
+    { word: "traditional", def: "following old ways of doing things", ex: "They don’t live in traditional houses.", ua: "традиційний" },
+    { word: "advantage", def: "something good about a situation", ex: "One advantage is the beautiful view.", ua: "перевага" },
+    { word: "disadvantage", def: "something bad about a situation", ex: "A disadvantage is the cold weather.", ua: "недолік" },
+    { word: "protect", def: "to keep safe from danger", ex: "The trees protect them from animals.", ua: "захищати" },
+    { word: "material", def: "what something is made of", ex: "They use wood as building material.", ua: "матеріал" },
+    { word: "ladder", def: "a thing with steps for climbing up", ex: "They use a ladder to get into the treehouse.", ua: "драбина" },
+    { word: "view", def: "what you can see from a place", ex: "The view from the treehouse is amazing.", ua: "вид" },
+    { word: "tourist", def: "a person who visits a place for pleasure", ex: "Many tourists visit Petra.", ua: "турист" },
+    { word: "monument", def: "an old important building or structure", ex: "Petra has famous monuments.", ua: "пам’ятка" },
+    { word: "dive", def: "to swim under the water", ex: "The Bajau people can dive very deep.", ua: "пірнати" },
+    { word: "oxygen", def: "the gas we need to breathe", ex: "They can hold their breath and use less oxygen.", ua: "кисень" }
+  ],
+
+  reading: {
+    title: "People who don’t live in traditional houses",
+    houses: [
+      {
+        name: "1. Living in trees",
+        text: "The Korowai tribe of Papua New Guinea live in treehouses high in the rainforest. The trees are strong and good for climbing. Their houses are about 8–15 metres above the ground. This protects them from animals and floods. They use a ladder to get up and build the houses from wood. Imagine the beautiful views from a treehouse!"
+      },
+      {
+        name: "2. Living underground",
+        text: "In Coober Pedy, Australia, many people live underground. The desert is very hot, but underground homes stay cool. About half of the people in the town live under the ground. You can find shops, hotels and even a church underground!"
+      },
+      {
+        name: "3. Living on a volcano",
+        text: "Aogashima is a small Japanese island with an active volcano. About 200 people live there. They are not worried about another eruption. The island has hot springs and beautiful nature. Tourists can take a boat trip from Tokyo to visit."
+      },
+      {
+        name: "4. Living on the sea",
+        text: "The Bajau people of Southeast Asia live on boats or in houses on stilts in the sea. They spend most of their lives on the water. Bajau children learn to swim and dive when they are very young. Some can dive very deep and stay underwater for a long time."
+      },
+      {
+        name: "5. Living in caves",
+        text: "Petra in Jordan is a famous place with houses and monuments cut into the rock. Long ago, people lived in these caves. Today tourists visit Petra to see the beautiful buildings. The government protects the area."
+      }
+    ]
+  },
+
+  functionalPhrases: [
+    "One advantage of living in a treehouse is…",
+    "A disadvantage is that…",
+    "I would like / wouldn’t like to live there because…",
+    "In my opinion, the most interesting place is…",
+    "I prefer living in a normal house because…"
+  ],
+
+  exercises: {
+    /* 4 vocabulary exercises */
+    matching: {
+      title: "Vocabulary 1 – Match the words",
+      pairs: [
+        { left: "treehouse", right: "a house built in a tree" },
+        { left: "underground", right: "under the ground" },
+        { left: "volcano", right: "a mountain that can explode" },
+        { left: "cave", right: "a large hole in a mountain" },
+        { left: "stilts", right: "long poles that hold a house up" },
+        { left: "rainforest", right: "a thick hot wet forest" }
+      ]
+    },
+    gapfill: {
+      title: "Vocabulary 2 – Complete the sentences",
+      words: ["advantage", "disadvantage", "protect", "ladder", "view", "tourist"],
+      items: [
+        { sentence: "One ______ of living underground is that it is cool in summer.", answer: "advantage" },
+        { sentence: "A ______ of living in a treehouse is that it can be dangerous.", answer: "disadvantage" },
+        { sentence: "The high houses ______ the Korowai from animals.", answer: "protect" },
+        { sentence: "They use a ______ to climb into the treehouse.", answer: "ladder" },
+        { sentence: "The ______ from the top of the tree is amazing.", answer: "view" },
+        { sentence: "Many ______ visit Petra every year.", answer: "tourist" }
+      ]
+    },
+    mcVocab: {
+      title: "Vocabulary 3 – Choose the correct word",
+      items: [
+        { q: "The Bajau people live in houses on ______ in the sea.", options: ["stilts", "caves", "deserts"], answer: 0, hint: "Think about houses above the water." },
+        { q: "Coober Pedy is in the ______. It is very dry and hot.", options: ["rainforest", "desert", "island"], answer: 1, hint: "A very dry place." },
+        { q: "The Korowai are a ______ in Papua New Guinea.", options: ["tourist", "monument", "tribe"], answer: 2, hint: "A group of people with the same culture." },
+        { q: "Petra has many old ______ cut into the rock.", options: ["volcanoes", "monuments", "ladders"], answer: 1, hint: "Important old buildings." }
+      ]
+    },
+    dragdrop: {
+      title: "Vocabulary 4 – Match place and description",
+      items: [
+        { sentence: "Korowai people → ______", options: ["treehouses", "caves", "boats"], answer: "treehouses" },
+        { sentence: "Coober Pedy → ______", options: ["underground homes", "volcano", "stilts"], answer: "underground homes" },
+        { sentence: "Bajau people → ______", options: ["houses on stilts", "desert", "rainforest"], answer: "houses on stilts" },
+        { sentence: "Petra → ______", options: ["caves and monuments", "treehouses", "hot springs"], answer: "caves and monuments" }
+      ]
+    },
+
+    /* other exercises */
+    tf: {
+      title: "Reading – True or False",
+      items: [
+        { q: "The Korowai build their houses high in the trees.", a: true, hint: "Read the first text about living in trees." },
+        { q: "All people in Coober Pedy live underground.", a: false, hint: "Look for the word ‘half’." },
+        { q: "Aogashima has about 200 people.", a: true, hint: "Find the number in the volcano text." },
+        { q: "Bajau children learn to dive when they are old.", a: false, hint: "When do they learn to swim and dive?" }
+      ]
+    },
+    order: {
+      title: "Put the words in order",
+      items: [
+        { words: ["I", "would", "like", "to", "live", "in", "a", "treehouse"], answer: "I would like to live in a treehouse" },
+        { words: ["One", "advantage", "is", "the", "beautiful", "view"], answer: "One advantage is the beautiful view" },
+        { words: ["Living", "underground", "is", "cool", "in", "summer"], answer: "Living underground is cool in summer" }
+      ]
+    },
+    mcReading: {
+      title: "Reading – Choose the correct answer",
+      items: [
+        { q: "Why do the Korowai live in trees?", options: ["Because it is cheap", "To protect themselves from animals", "Because they like climbing"], answer: 1, hint: "Read the sentence with ‘protect’." },
+        { q: "What is special about homes in Coober Pedy?", options: ["They are made of glass", "They are underground and stay cool", "They are on stilts"], answer: 1, hint: "Look at the underground text." },
+        { q: "Where do the Bajau people live?", options: ["In caves", "On the sea", "In the desert"], answer: 1, hint: "Read the text about living on the sea." }
+      ]
+    }
+  },
+
+  speaking: {
+    leadin: [
+      { prompt: "Look at these places: treehouse, underground home, house on the sea, cave. Which one looks the most interesting? Why?", time: "1–2 min" },
+      { prompt: "What are the advantages and disadvantages of living in a treehouse?", time: "1–2 min" }
+    ],
+    production: [
+      {
+        title: "Discussion cards (pairs)",
+        cards: [
+          "Which of the five places would you most like to visit? Why?",
+          "Would you like to live in a treehouse for one month? What would be good and bad?",
+          "Is it better to live in a traditional house or an unusual house? Give reasons.",
+          "Invent a new unusual house (for example under the water or in the clouds). Describe it to your partner."
+        ]
+      },
+      {
+        title: "Role-play: Choose a home",
+        roles: [
+          { name: "Student A", text: "You want to live in a treehouse for a year. Tell your partner why. Talk about the advantages (view, nature, quiet). Answer their questions." },
+          { name: "Student B", text: "You think living in a treehouse is a bad idea. Talk about the disadvantages (dangerous, difficult, far from shops). Try to change Student A’s mind." }
+        ]
+      }
+    ]
+  },
+
+  summaryPoints: [
+    "New words: treehouse, underground, volcano, stilts, rainforest, advantage, disadvantage…",
+    "People live in many different kinds of houses around the world.",
+    "Useful phrases: One advantage is… / A disadvantage is… / I would like to live…"
+  ]
+};
+
+/* ============================================================
+   APP LOGIC
+   ============================================================ */
+let currentStage = 0;
+const totalStages = lessonData.stages.length;
+const attempts = {};
+
+function init() {
+  renderNav();
+  renderStages();
+  showStage(0);
+  updateProgress();
+}
+
+function renderNav() {
+  const nav = document.getElementById("stageNav");
+  nav.innerHTML = "";
+  lessonData.stages.forEach((s, i) => {
+    const btn = document.createElement("button");
+    btn.textContent = `${i+1}. ${s.name}`;
+    btn.onclick = () => showStage(i);
+    nav.appendChild(btn);
+  });
+}
+
+function renderStages() {
+  const c = document.getElementById("stagesContainer");
+  c.innerHTML = "";
+  c.appendChild(createLeadin());
+  c.appendChild(createVocab());
+  c.appendChild(createReading());
+  c.appendChild(createControlled());
+  c.appendChild(createSemi());
+  c.appendChild(createProduction());
+  c.appendChild(createSummary());
+}
+
+function shell(idx) {
+  const s = lessonData.stages[idx];
+  const div = document.createElement("div");
+  div.className = "stage";
+  div.id = `stage-${idx}`;
+  div.innerHTML = `<div class="stage-header"><h2>${s.name}</h2><div class="aim"><strong>Aim:</strong> ${s.aim}</div><span class="time">⏱ ${s.time}</span></div>`;
+  return div;
+}
+
+/* 1 LEAD-IN */
+function createLeadin() {
+  const div = shell(0);
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `<h3>Warm-up (pairs)</h3>
+    <div class="hint-ua">🇺🇦 Поговоріть у парах. Використовуйте англійську.</div>`;
+  lessonData.speaking.leadin.forEach((item, i) => {
+    card.innerHTML += `<div class="speak-card"><div class="prompt"><span class="q-num">${i+1}</span>${item.prompt}</div><div class="timer-hint">${item.time}</div></div>`;
+  });
+  card.innerHTML += `<div class="hint-ua" style="margin-top:10px">🇺🇦 Після обговорення коротко розкажіть класу 1–2 ідеї.</div>`;
+  div.appendChild(card);
+  return div;
+}
+
+/* 2 VOCABULARY */
+function createVocab() {
+  const div = shell(1);
+
+  const list = document.createElement("div");
+  list.className = "card";
+  list.innerHTML = `<h3>20 new words</h3>
+    <div class="hint-ua">🇺🇦 Вивчіть слова. Натисніть, щоб побачити переклад.</div>
+    <div class="vocab-grid" id="vocabGrid"></div>`;
+  div.appendChild(list);
+
+  setTimeout(() => {
+    const grid = document.getElementById("vocabGrid");
+    if (!grid) return;
+    lessonData.vocab.forEach(v => {
+      const item = document.createElement("div");
+      item.className = "vocab-item";
+      item.innerHTML = `<div class="word">${v.word}</div><div class="def">${v.def}</div><div class="ex">“${v.ex}”</div>
+        <div style="margin-top:4px;font-size:0.82rem;color:var(--orange);cursor:pointer" onclick="this.nextElementSibling.classList.toggle('hidden')">🇺🇦 переклад</div>
+        <div class="hidden" style="color:var(--muted);font-size:0.85rem">${v.ua}</div>`;
+      grid.appendChild(item);
+    });
+  }, 30);
+
+  // Vocab 1 Matching
+  const match = document.createElement("div");
+  match.className = "card";
+  match.innerHTML = `<h3>${lessonData.exercises.matching.title}</h3>
+    <div class="hint-ua">🇺🇦 Натисніть слово, потім визначення.</div>
+    <div class="match-grid" id="matchGrid"></div>
+    <div class="feedback" id="fb-match"></div>
+    <div class="btn-row"><button class="btn btn-outline" onclick="resetMatch()">Reset</button></div>`;
+  div.appendChild(match);
+  setTimeout(buildMatching, 40);
+
+  // Vocab 2 Gap-fill
+  const gap = document.createElement("div");
+  gap.className = "card";
+  gap.innerHTML = `<h3>${lessonData.exercises.gapfill.title}</h3>
+    <div class="word-bank">${lessonData.exercises.gapfill.words.map(w => `<span>${w}</span>`).join(" · ")}</div>`;
+  lessonData.exercises.gapfill.items.forEach((item, i) => {
+    const parts = item.sentence.split("______");
+    gap.innerHTML += `<div style="margin:11px 0">
+      <div><span class="q-num">${i+1}</span>${parts[0]}<input class="gap-input" id="gap-${i}" data-answer="${item.answer}">${parts[1]||""}</div>
+      <div class="feedback" id="fb-gap-${i}"></div>
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="checkGap(${i})">Check</button>
+        <button class="btn btn-orange hidden" id="show-gap-${i}" onclick="showAns('gap',${i})">Show answer</button>
+      </div></div>`;
+  });
+  div.appendChild(gap);
+
+  return div;
+}
+
+/* 3 READING */
+function createReading() {
+  const div = shell(2);
+
+  const text = document.createElement("div");
+  text.className = "card";
+  text.innerHTML = `<h3>Reading: ${lessonData.reading.title}</h3>
+    <div class="hint-ua">🇺🇦 Прочитайте про 5 незвичайних способів життя. Потім виконайте вправи.</div>
+    <div class="reading-text">
+      ${lessonData.reading.houses.map(h => `<div class="house-card"><strong>${h.name}</strong><p style="margin-top:6px">${h.text}</p></div>`).join("")}
+    </div>`;
+  div.appendChild(text);
+
+  // Phrases
+  const phr = document.createElement("div");
+  phr.className = "card";
+  phr.innerHTML = `<h3>Useful phrases</h3>
+    <ul style="padding-left:20px;line-height:1.8">${lessonData.functionalPhrases.map(p => `<li>${p}</li>`).join("")}</ul>
+    <div class="hint-ua">🇺🇦 Повторіть фрази вголос.</div>`;
+  div.appendChild(phr);
+
+  // CCQs
+  const ccq = document.createElement("div");
+  ccq.className = "card";
+  ccq.innerHTML = `<h3>Check understanding (CCQs)</h3>
+    <div class="hint-ua">🇺🇦 Відповідайте в парах.</div>
+    <div class="speak-card"><div class="prompt">1. Do the Korowai live in normal houses or in trees?</div></div>
+    <div class="speak-card"><div class="prompt">2. Is Coober Pedy hot or cool underground?</div></div>
+    <div class="speak-card"><div class="prompt">3. Can Bajau children swim well?</div></div>`;
+  div.appendChild(ccq);
+
+  return div;
+}
+
+/* 4 CONTROLLED */
+function createControlled() {
+  const div = shell(3);
+
+  // TF
+  const tf = document.createElement("div");
+  tf.className = "card";
+  tf.innerHTML = `<h3>${lessonData.exercises.tf.title}</h3>`;
+  lessonData.exercises.tf.items.forEach((item, i) => {
+    tf.innerHTML += `<div style="margin:10px 0">
+      <div><span class="q-num">${i+1}</span>${item.q}</div>
+      <div style="margin-top:5px">
+        <button class="tf-btn" data-i="${i}" data-v="true" onclick="selTF(this)">True</button>
+        <button class="tf-btn" data-i="${i}" data-v="false" onclick="selTF(this)">False</button>
+      </div>
+      <div class="feedback" id="fb-tf-${i}"></div>
+      <div class="btn-row" id="btns-tf-${i}" style="display:none">
+        <button class="btn btn-outline" onclick="checkTF(${i})">Check</button>
+        <button class="btn btn-orange hidden" id="show-tf-${i}" onclick="showAns('tf',${i})">Show answer</button>
+      </div></div>`;
+  });
+  div.appendChild(tf);
+
+  // Vocab 3 MC
+  const mcV = document.createElement("div");
+  mcV.className = "card";
+  mcV.innerHTML = `<h3>${lessonData.exercises.mcVocab.title}</h3>`;
+  lessonData.exercises.mcVocab.items.forEach((item, i) => {
+    let opts = item.options.map((o, oi) =>
+      `<button class="mc-option" data-ex="mcv" data-i="${i}" data-oi="${oi}" onclick="selMC(this)">${o}</button>`
+    ).join("");
+    mcV.innerHTML += `<div style="margin:12px 0"><div><span class="q-num">${i+1}</span>${item.q}</div>${opts}
+      <div class="feedback" id="fb-mcv-${i}"></div>
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="checkMC('mcv',${i})">Check</button>
+        <button class="btn btn-orange hidden" id="show-mcv-${i}" onclick="showAns('mcv',${i})">Show answer</button>
+      </div></div>`;
+  });
+  div.appendChild(mcV);
+
+  return div;
+}
+
+/* 5 SEMI-CONTROLLED */
+function createSemi() {
+  const div = shell(4);
+
+  // Vocab 4 Drag-drop
+  const dd = document.createElement("div");
+  dd.className = "card";
+  dd.innerHTML = `<h3>${lessonData.exercises.dragdrop.title}</h3>
+    <div class="hint-ua">🇺🇦 Перетягніть правильну відповідь.</div>`;
+  lessonData.exercises.dragdrop.items.forEach((item, i) => {
+    const parts = item.sentence.split("______");
+    dd.innerHTML += `<div style="margin:14px 0">
+      <div><span class="q-num">${i+1}</span>${parts[0]}<span class="drop-slot" id="drop-${i}" data-answer="${item.answer}" ondragover="allowDrop(event)" ondrop="drop(event,${i})"></span>${parts[1]||""}</div>
+      <div class="drag-zone" id="drag-zone-${i}"></div>
+      <div class="feedback" id="fb-dd-${i}"></div>
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="checkDD(${i})">Check</button>
+        <button class="btn btn-orange hidden" id="show-dd-${i}" onclick="showAns('dd',${i})">Show answer</button>
+      </div></div>`;
+  });
+  div.appendChild(dd);
+  setTimeout(buildDragItems, 40);
+
+  // Order
+  const order = document.createElement("div");
+  order.className = "card";
+  order.innerHTML = `<h3>${lessonData.exercises.order.title}</h3>`;
+  lessonData.exercises.order.items.forEach((item, i) => {
+    order.innerHTML += `<div style="margin-bottom:16px"><div><span class="q-num">${i+1}</span></div>
+      <div class="order-bank" id="order-bank-${i}"></div>
+      <div class="order-sentence" id="order-sent-${i}"></div>
+      <div class="feedback" id="fb-order-${i}"></div>
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="checkOrder(${i})">Check</button>
+        <button class="btn btn-outline" onclick="resetOrder(${i})">Reset</button>
+        <button class="btn btn-orange hidden" id="show-order-${i}" onclick="showAns('order',${i})">Show answer</button>
+      </div></div>`;
+  });
+  div.appendChild(order);
+  setTimeout(buildOrderBanks, 40);
+
+  // Reading MC
+  const mcR = document.createElement("div");
+  mcR.className = "card";
+  mcR.innerHTML = `<h3>${lessonData.exercises.mcReading.title}</h3>`;
+  lessonData.exercises.mcReading.items.forEach((item, i) => {
+    let opts = item.options.map((o, oi) =>
+      `<button class="mc-option" data-ex="mcr" data-i="${i}" data-oi="${oi}" onclick="selMC(this)">${o}</button>`
+    ).join("");
+    mcR.innerHTML += `<div style="margin:12px 0"><div><span class="q-num">${i+1}</span>${item.q}</div>${opts}
+      <div class="feedback" id="fb-mcr-${i}"></div>
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="checkMC('mcr',${i})">Check</button>
+        <button class="btn btn-orange hidden" id="show-mcr-${i}" onclick="showAns('mcr',${i})">Show answer</button>
+      </div></div>`;
+  });
+  div.appendChild(mcR);
+
+  return div;
+}
+
+/* 6 PRODUCTION */
+function createProduction() {
+  const div = shell(5);
+
+  const disc = document.createElement("div");
+  disc.className = "card";
+  disc.innerHTML = `<h3>${lessonData.speaking.production[0].title}</h3>
+    <div class="hint-ua">🇺🇦 Обговоріть у парах. Використовуйте нові слова і фрази!</div>`;
+  lessonData.speaking.production[0].cards.forEach((c, i) => {
+    disc.innerHTML += `<div class="speak-card"><div class="prompt"><span class="q-num">${i+1}</span>${c}</div><div class="timer-hint">≈ 1–2 min</div></div>`;
+  });
+  div.appendChild(disc);
+
+  const role = document.createElement("div");
+  role.className = "card";
+  role.innerHTML = `<h3>${lessonData.speaking.production[1].title}</h3>
+    <div class="hint-ua">🇺🇦 Розподіліть ролі. Після 3–4 хв поміняйтеся.</div>
+    <div style="background:white;border-radius:10px;padding:13px;margin:8px 0;border-left:5px solid var(--orange)">
+      <strong>Student A</strong><br>${lessonData.speaking.production[1].roles[0].text}
+    </div>
+    <div style="background:white;border-radius:10px;padding:13px;margin:8px 0;border-left:5px solid var(--orange)">
+      <strong>Student B</strong><br>${lessonData.speaking.production[1].roles[1].text}
+    </div>`;
+  div.appendChild(role);
+
+  return div;
+}
+
+/* 7 SUMMARY */
+function createSummary() {
+  const div = shell(6);
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `<h3>What did we learn?</h3>
+    <div class="hint-ua">🇺🇦 Найголовніше:</div>
+    <ul style="padding-left:20px;line-height:1.8;margin:10px 0">
+      ${lessonData.summaryPoints.map(p => `<li>${p}</li>`).join("")}
+    </ul>
+    <div class="speak-card">
+      <div class="prompt">Tell your partner: Which unusual house do you like best and why? Use at least 3 new words.</div>
+    </div>
+    <div style="margin-top:14px;padding:12px;background:#E8F5E9;border-radius:10px">
+      <strong>Great job!</strong> You can now talk about unusual homes and use 20 new words.
+    </div>
+    <div class="btn-row" style="margin-top:12px">
+      <button class="btn btn-primary" onclick="restartLesson()">↻ Start again</button>
+    </div>`;
+  div.appendChild(card);
+  return div;
+}
+
+/* NAV */
+function showStage(idx) {
+  currentStage = idx;
+  document.querySelectorAll(".stage").forEach((el, i) => el.classList.toggle("active", i === idx));
+  document.querySelectorAll("#stageNav button").forEach((btn, i) => {
+    btn.classList.toggle("active", i === idx);
+    if (i < idx) btn.classList.add("done");
+  });
+  document.getElementById("prevBtn").disabled = idx === 0;
+  document.getElementById("nextBtn").textContent = idx === totalStages - 1 ? "Finish" : "Next →";
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+function changeStage(d) {
+  const n = currentStage + d;
+  if (n >= 0 && n < totalStages) showStage(n);
+}
+function updateProgress() {
+  document.getElementById("progressBar").style.width = ((currentStage + 1) / totalStages * 100) + "%";
+}
+function restartLesson() {
+  if (confirm("Start the lesson again?")) location.reload();
+}
+
+/* MATCHING */
+let matchSelected = null, matchLeft = 0;
+function buildMatching() {
+  const grid = document.getElementById("matchGrid");
+  if (!grid) return;
+  const pairs = lessonData.exercises.matching.pairs;
+  matchLeft = pairs.length;
+  const lefts = pairs.map((p, i) => ({ text: p.left, id: i, type: "L" }));
+  const rights = pairs.map((p, i) => ({ text: p.right, id: i, type: "R" }));
+  for (let i = rights.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [rights[i], rights[j]] = [rights[j], rights[i]];
+  }
+  grid.innerHTML = "";
+  [...lefts, ...rights].forEach(item => {
+    const el = document.createElement("div");
+    el.className = "match-item";
+    el.textContent = item.text;
+    el.dataset.id = item.id;
+    el.dataset.type = item.type;
+    el.onclick = () => onMatch(el);
+    grid.appendChild(el);
+  });
+}
+function onMatch(el) {
+  if (el.classList.contains("matched")) return;
+  if (!matchSelected) { matchSelected = el; el.classList.add("selected"); return; }
+  if (matchSelected === el) { el.classList.remove("selected"); matchSelected = null; return; }
+  if (matchSelected.dataset.type === el.dataset.type) {
+    matchSelected.classList.remove("selected"); matchSelected = el; el.classList.add("selected"); return;
+  }
+  if (matchSelected.dataset.id === el.dataset.id) {
+    matchSelected.classList.remove("selected");
+    matchSelected.classList.add("matched");
+    el.classList.add("matched");
+    matchSelected = null;
+    matchLeft--;
+    if (matchLeft === 0) {
+      document.getElementById("fb-match").className = "feedback correct";
+      document.getElementById("fb-match").textContent = "✓ Excellent!";
+    }
+  } else {
+    matchSelected.classList.add("wrong-temp");
+    el.classList.add("wrong-temp");
+    setTimeout(() => {
+      matchSelected.classList.remove("selected", "wrong-temp");
+      el.classList.remove("wrong-temp");
+      matchSelected = null;
+    }, 500);
+  }
+}
+function resetMatch() {
+  matchSelected = null;
+  buildMatching();
+  document.getElementById("fb-match").style.display = "none";
+}
+
+/* GAP */
+function checkGap(i) {
+  const key = "gap" + i;
+  attempts[key] = (attempts[key] || 0) + 1;
+  const input = document.getElementById("gap-" + i);
+  const user = input.value.trim().toLowerCase();
+  const correct = input.dataset.answer.toLowerCase();
+  const fb = document.getElementById("fb-gap-" + i);
+  if (user === correct) {
+    fb.className = "feedback correct";
+    fb.textContent = "✓ Correct!";
+    document.getElementById("show-gap-" + i).classList.add("hidden");
+  } else {
+    fb.className = "feedback wrong";
+    fb.textContent = "✗ Try again.";
+    if (attempts[key] >= 2) document.getElementById("show-gap-" + i).classList.remove("hidden");
+    else {
+      fb.className = "feedback hint";
+      fb.textContent = "Hint: Look at the word bank.";
+    }
+  }
+}
+
+/* TF */
+function selTF(btn) {
+  const i = btn.dataset.i;
+  btn.parentElement.querySelectorAll(".tf-btn").forEach(b => b.classList.remove("selected-true", "selected-false"));
+  btn.classList.add(btn.dataset.v === "true" ? "selected-true" : "selected-false");
+  document.getElementById("btns-tf-" + i).style.display = "flex";
+}
+function checkTF(i) {
+  const key = "tf" + i;
+  attempts[key] = (attempts[key] || 0) + 1;
+  const parent = document.getElementById("fb-tf-" + i).previousElementSibling;
+  const selected = parent.querySelector(".selected-true, .selected-false");
+  if (!selected) return;
+  const user = selected.dataset.v === "true";
+  const correct = lessonData.exercises.tf.items[i].a;
+  const fb = document.getElementById("fb-tf-" + i);
+  if (user === correct) {
+    fb.className = "feedback correct";
+    fb.textContent = "✓ Correct!";
+    document.getElementById("show-tf-" + i).classList.add("hidden");
+  } else {
+    fb.className = "feedback wrong";
+    fb.textContent = "✗ Not quite.";
+    if (attempts[key] >= 2) document.getElementById("show-tf-" + i).classList.remove("hidden");
+    else {
+      fb.className = "feedback hint";
+      fb.textContent = "Hint: " + lessonData.exercises.tf.items[i].hint;
+    }
+  }
+}
+
+/* MC */
+function selMC(btn) {
+  const i = btn.dataset.i;
+  const ex = btn.dataset.ex;
+  document.querySelectorAll(`.mc-option[data-ex="${ex}"][data-i="${i}"]`).forEach(b => b.classList.remove("selected"));
+  btn.classList.add("selected");
+}
+function checkMC(ex, i) {
+  const key = ex + i;
+  attempts[key] = (attempts[key] || 0) + 1;
+  const sel = document.querySelector(`.mc-option[data-ex="${ex}"][data-i="${i}"].selected`);
+  if (!sel) return;
+  const oi = +sel.dataset.oi;
+  let correct, hint, options;
+  if (ex === "mcv") {
+    correct = lessonData.exercises.mcVocab.items[i].answer;
+    hint = lessonData.exercises.mcVocab.items[i].hint;
+    options = lessonData.exercises.mcVocab.items[i].options;
+  } else {
+    correct = lessonData.exercises.mcReading.items[i].answer;
+    hint = lessonData.exercises.mcReading.items[i].hint;
+    options = lessonData.exercises.mcReading.items[i].options;
+  }
+  const fb = document.getElementById(`fb-${ex}-${i}`);
+  if (oi === correct) {
+    fb.className = "feedback correct";
+    fb.textContent = "✓ Correct!";
+    sel.classList.add("correct-ans");
+    document.getElementById(`show-${ex}-${i}`).classList.add("hidden");
+  } else {
+    fb.className = "feedback wrong";
+    fb.textContent = "✗ Try again.";
+    if (attempts[key] >= 2) document.getElementById(`show-${ex}-${i}`).classList.remove("hidden");
+    else {
+      fb.className = "feedback hint";
+      fb.textContent = "Hint: " + hint;
+    }
+  }
+}
+
+/* ORDER */
+const orderState = {};
+function buildOrderBanks() {
+  lessonData.exercises.order.items.forEach((item, i) => {
+    const bank = document.getElementById("order-bank-" + i);
+    if (!bank) return;
+    orderState[i] = [];
+    const words = [...item.words];
+    for (let k = words.length - 1; k > 0; k--) {
+      const j = Math.floor(Math.random() * (k + 1));
+      [words[k], words[j]] = [words[j], words[k]];
+    }
+    words.forEach(w => {
+      const el = document.createElement("span");
+      el.className = "order-word";
+      el.textContent = w;
+      el.dataset.word = w;
+      el.onclick = () => addOrderWord(i, el);
+      bank.appendChild(el);
+    });
+  });
+}
+function addOrderWord(i, el) {
+  if (el.classList.contains("used")) return;
+  el.classList.add("used");
+  orderState[i].push(el.dataset.word);
+  const sent = document.getElementById("order-sent-" + i);
+  const chip = document.createElement("span");
+  chip.className = "order-word";
+  chip.textContent = el.dataset.word;
+  chip.style.background = "var(--green)";
+  chip.style.color = "white";
+  chip.onclick = () => {
+    const idx = orderState[i].lastIndexOf(el.dataset.word);
+    if (idx > -1) orderState[i].splice(idx, 1);
+    chip.remove();
+    el.classList.remove("used");
+  };
+  sent.appendChild(chip);
+}
+function checkOrder(i) {
+  const key = "order" + i;
+  attempts[key] = (attempts[key] || 0) + 1;
+  const user = orderState[i].join(" ");
+  const correct = lessonData.exercises.order.items[i].answer;
+  const fb = document.getElementById("fb-order-" + i);
+  if (user === correct) {
+    fb.className = "feedback correct";
+    fb.textContent = "✓ Perfect!";
+    document.getElementById("show-order-" + i).classList.add("hidden");
+  } else {
+    fb.className = "feedback wrong";
+    fb.textContent = "✗ Not quite.";
+    if (attempts[key] >= 2) document.getElementById("show-order-" + i).classList.remove("hidden");
+    else {
+      fb.className = "feedback hint";
+      fb.textContent = "Hint: Start with I / One / Living…";
+    }
+  }
+}
+function resetOrder(i) {
+  orderState[i] = [];
+  document.getElementById("order-sent-" + i).innerHTML = "";
+  document.getElementById("order-bank-" + i).querySelectorAll(".order-word").forEach(w => w.classList.remove("used"));
+  document.getElementById("fb-order-" + i).style.display = "none";
+  document.getElementById("show-order-" + i).classList.add("hidden");
+}
+
+/* DRAG DROP */
+function buildDragItems() {
+  lessonData.exercises.dragdrop.items.forEach((item, i) => {
+    const zone = document.getElementById("drag-zone-" + i);
+    if (!zone) return;
+    const opts = [...item.options];
+    for (let k = opts.length - 1; k > 0; k--) {
+      const j = Math.floor(Math.random() * (k + 1));
+      [opts[k], opts[j]] = [opts[j], opts[k]];
+    }
+    opts.forEach(o => {
+      const el = document.createElement("div");
+      el.className = "drag-item";
+      el.textContent = o;
+      el.draggable = true;
+      el.dataset.value = o;
+      el.ondragstart = e => { e.dataTransfer.setData("text/plain", o); el.classList.add("dragging"); };
+      el.ondragend = () => el.classList.remove("dragging");
+      el.addEventListener("touchstart", handleTouchStart, { passive: false });
+      el.addEventListener("touchmove", handleTouchMove, { passive: false });
+      el.addEventListener("touchend", handleTouchEnd, { passive: false });
+      zone.appendChild(el);
+    });
+  });
+}
+function allowDrop(e) { e.preventDefault(); }
+function drop(e, i) {
+  e.preventDefault();
+  const val = e.dataTransfer.getData("text/plain");
+  const slot = document.getElementById("drop-" + i);
+  slot.innerHTML = "";
+  const chip = document.createElement("div");
+  chip.className = "drag-item";
+  chip.textContent = val;
+  chip.dataset.value = val;
+  slot.appendChild(chip);
+  slot.classList.add("filled");
+}
+function checkDD(i) {
+  const key = "dd" + i;
+  attempts[key] = (attempts[key] || 0) + 1;
+  const slot = document.getElementById("drop-" + i);
+  const chip = slot.querySelector(".drag-item");
+  const fb = document.getElementById("fb-dd-" + i);
+  if (!chip) { fb.className = "feedback hint"; fb.textContent = "Drag a word first."; return; }
+  if (chip.dataset.value === slot.dataset.answer) {
+    fb.className = "feedback correct";
+    fb.textContent = "✓ Correct!";
+    document.getElementById("show-dd-" + i).classList.add("hidden");
+  } else {
+    fb.className = "feedback wrong";
+    fb.textContent = "✗ Try another.";
+    if (attempts[key] >= 2) document.getElementById("show-dd-" + i).classList.remove("hidden");
+    else {
+      fb.className = "feedback hint";
+      fb.textContent = "Hint: Think which place matches the description.";
+    }
+  }
+}
+
+let touchItem = null, touchClone = null;
+function handleTouchStart(e) {
+  touchItem = e.target.closest(".drag-item");
+  if (!touchItem) return;
+  e.preventDefault();
+  touchClone = touchItem.cloneNode(true);
+  touchClone.style.cssText = "position:fixed;z-index:9999;opacity:0.85;pointer-events:none;";
+  document.body.appendChild(touchClone);
+  const t = e.touches[0];
+  touchClone.style.left = (t.clientX - 40) + "px";
+  touchClone.style.top = (t.clientY - 20) + "px";
+}
+function handleTouchMove(e) {
+  if (!touchClone) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  touchClone.style.left = (t.clientX - 40) + "px";
+  touchClone.style.top = (t.clientY - 20) + "px";
+}
+function handleTouchEnd(e) {
+  if (!touchClone || !touchItem) return;
+  const t = e.changedTouches[0];
+  const el = document.elementFromPoint(t.clientX, t.clientY);
+  const slot = el ? el.closest(".drop-slot") : null;
+  if (slot) {
+    slot.innerHTML = "";
+    const chip = document.createElement("div");
+    chip.className = "drag-item";
+    chip.textContent = touchItem.dataset.value;
+    chip.dataset.value = touchItem.dataset.value;
+    slot.appendChild(chip);
+    slot.classList.add("filled");
+  }
+  touchClone.remove();
+  touchClone = null;
+  touchItem = null;
+}
+
+/* SHOW ANSWER */
+function showAns(type, i) {
+  if (type === "gap") {
+    document.getElementById("gap-" + i).value = lessonData.exercises.gapfill.items[i].answer;
+    document.getElementById("fb-gap-" + i).className = "feedback correct";
+    document.getElementById("fb-gap-" + i).textContent = "Answer: " + lessonData.exercises.gapfill.items[i].answer;
+  } else if (type === "tf") {
+    const a = lessonData.exercises.tf.items[i].a ? "True" : "False";
+    document.getElementById("fb-tf-" + i).className = "feedback correct";
+    document.getElementById("fb-tf-" + i).textContent = "Answer: " + a;
+  } else if (type === "mcv") {
+    const ans = lessonData.exercises.mcVocab.items[i].answer;
+    document.getElementById("fb-mcv-" + i).className = "feedback correct";
+    document.getElementById("fb-mcv-" + i).textContent = "Answer: " + lessonData.exercises.mcVocab.items[i].options[ans];
+    document.querySelectorAll(`.mc-option[data-ex="mcv"][data-i="${i}"]`)[ans].classList.add("correct-ans");
+  } else if (type === "mcr") {
+    const ans = lessonData.exercises.mcReading.items[i].answer;
+    document.getElementById("fb-mcr-" + i).className = "feedback correct";
+    document.getElementById("fb-mcr-" + i).textContent = "Answer: " + lessonData.exercises.mcReading.items[i].options[ans];
+    document.querySelectorAll(`.mc-option[data-ex="mcr"][data-i="${i}"]`)[ans].classList.add("correct-ans");
+  } else if (type === "order") {
+    document.getElementById("fb-order-" + i).className = "feedback correct";
+    document.getElementById("fb-order-" + i).textContent = "Answer: " + lessonData.exercises.order.items[i].answer;
+  } else if (type === "dd") {
+    const text = lessonData.exercises.dragdrop.items[i].answer;
+    const slot = document.getElementById("drop-" + i);
+    slot.innerHTML = "";
+    const chip = document.createElement("div");
+    chip.className = "drag-item";
+    chip.textContent = text;
+    slot.appendChild(chip);
+    slot.classList.add("filled");
+    document.getElementById("fb-dd-" + i).className = "feedback correct";
+    document.getElementById("fb-dd-" + i).textContent = "Answer: " + text;
+  }
+}
+
+init();
+</script>
+</body>
+</html>
