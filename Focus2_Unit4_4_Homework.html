@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Focus 2 · Unit 4/4 h/w</title>
+<style>
+  :root {
+    --green: #2E7D32;
+    --green-light: #4CAF50;
+    --green-dark: #1B5E20;
+    --orange: #F57C00;
+    --orange-light: #FF9800;
+    --bg: #F5F7FA;
+    --text: #212121;
+    --muted: #616161;
+    --border: #E0E0E0;
+    --success: #2E7D32;
+    --error: #C62828;
+    --radius: 12px;
+    --shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    font-size: 16.5px;
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+  .app { max-width: 820px; margin: 0 auto; padding: 16px; }
+  header {
+    background: linear-gradient(135deg, var(--green-dark), var(--green));
+    color: white;
+    padding: 18px 20px;
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+  }
+  header h1 { font-size: 1.3rem; margin-bottom: 4px; }
+  header .meta { font-size: 0.9rem; opacity: 0.9; }
+  .section {
+    background: white;
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+  }
+  .section h2 {
+    color: var(--green-dark);
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .badge {
+    background: var(--orange);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 99px;
+  }
+  .aim { color: var(--muted); font-size: 0.85rem; margin-bottom: 10px; }
+  .hint-ua {
+    background: #FFF8E1;
+    border-left: 4px solid var(--orange);
+    padding: 7px 10px;
+    margin: 6px 0 10px;
+    font-size: 0.84rem;
+    color: #5D4037;
+    border-radius: 0 8px 8px 0;
+  }
+  .q-num {
+    display: inline-block;
+    background: var(--green);
+    color: white;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 22px;
+    font-weight: 700;
+    font-size: 0.78rem;
+    margin-right: 6px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 9px 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-primary { background: var(--green); color: white; }
+  .btn-outline { background: white; border: 2px solid var(--green); color: var(--green); }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 8px; }
+  .feedback {
+    margin-top: 5px;
+    padding: 6px 9px;
+    border-radius: 8px;
+    font-weight: 600;
+    display: none;
+    font-size: 0.86rem;
+  }
+  .feedback.correct { background: #E8F5E9; color: var(--success); display: block; }
+  .feedback.wrong { background: #FFEBEE; color: var(--error); display: block; }
+  .mc-option {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 9px 11px;
+    margin: 4px 0;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    background: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+  .mc-option.selected { border-color: var(--orange); background: #FFF3E0; }
+  .mc-option.correct-ans { border-color: var(--success); background: #E8F5E9; }
+  .mc-option.wrong-ans { border-color: var(--error); background: #FFEBEE; }
+  .gap-input {
+    border: none;
+    border-bottom: 2px solid var(--orange);
+    background: #FFF8E1;
+    padding: 2px 6px;
+    font-size: 0.95rem;
+    min-width: 90px;
+    text-align: center;
+    border-radius: 4px;
+  }
+  .match-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+  }
+  @media (max-width: 560px) { .match-grid { grid-template-columns: 1fr; } }
+  .match-item {
+    padding: 9px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    background: white;
+    user-select: none;
+    font-size: 0.86rem;
+  }
+  .match-item.selected { border-color: var(--orange); background: #FFF3E0; }
+  .match-item.matched { border-color: var(--success); background: #E8F5E9; pointer-events: none; }
+  .match-item.wrong-temp { border-color: var(--error); background: #FFEBEE; }
+  .word-bank {
+    background: #E8F5E9;
+    padding: 8px;
+    border-radius: 8px;
+    margin: 6px 0;
+    font-weight: 600;
+    line-height: 1.6;
+    font-size: 0.86rem;
+  }
+  .reading-box {
+    background: #FFFDE7;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 10px;
+  }
+  .score-box {
+    background: linear-gradient(135deg, #E8F5E9, #FFF3E0);
+    border-radius: 12px;
+    padding: 18px;
+    text-align: center;
+    margin-top: 16px;
+    display: none;
+    border: 2px solid var(--green-light);
+  }
+  .score-box.visible { display: block; }
+  .score-num { font-size: 2.2rem; font-weight: 800; color: var(--green-dark); }
+  .score-pct { font-size: 1.2rem; color: var(--orange); font-weight: 700; margin: 4px 0 10px; }
+  .breakdown { text-align: left; margin-top: 10px; font-size: 0.9rem; }
+  .breakdown div { padding: 4px 0; border-bottom: 1px solid #C8E6C9; }
+  footer { text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 18px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>Focus 2 · Unit 4/4 h/w</h1>
+    <div class="meta">Reading · Landscape features · Collocations · Describing places</div>
+  </header>
+
+  <!-- EX 1 Title choice -->
+  <div class="section">
+    <h2><span class="badge">1</span> Choose the best title</h2>
+    <div class="aim">Read the text quickly and choose the best title. (1 point)</div>
+    <div class="hint-ua">🇺🇦 Прочитай текст швидко і обери найкращу назву.</div>
+    <div class="reading-box" id="shortText">
+      W.J. Cavendish-Scott-Bentinck, the fifth Duke of Portland, was a very wealthy and very odd Englishman. He lived in a huge house called Welbeck Abbey. He was incredibly shy, built underground tunnels, wore strange clothes and wigs, and had nearly 1,500 people working for him. His house had empty pink rooms, a mini-railway for food, and a riding school with a glass roof over 100 metres long.
+    </div>
+    <div id="titleItems"></div>
+  </div>
+
+  <!-- EX 2 Gapped text -->
+  <div class="section">
+    <h2><span class="badge">2</span> Complete the gaps</h2>
+    <div class="aim">Choose the correct sentence for each gap. One is extra. (5 points)</div>
+    <div class="hint-ua">🇺🇦 Обери речення A–F для пропусків 1–5. Одне зайве.</div>
+    <div id="gapTextItems"></div>
+  </div>
+
+  <!-- EX 3 Comprehension -->
+  <div class="section">
+    <h2><span class="badge">3</span> Reading questions</h2>
+    <div class="aim">Choose the correct answer. (5 points)</div>
+    <div id="compItems"></div>
+  </div>
+
+  <!-- EX 4 Landscape vocabulary -->
+  <div class="section">
+    <h2><span class="badge">4</span> Landscape features</h2>
+    <div class="aim">Complete the sentences with the correct word. (5 points)</div>
+    <div class="word-bank">cave · crater · island · rainforest · stilts · volcano · ruins</div>
+    <div id="landItems"></div>
+  </div>
+
+  <!-- EX 5 Matching halves -->
+  <div class="section">
+    <h2><span class="badge">5</span> Describing places – Match</h2>
+    <div class="aim">Match the sentence halves. (5 points)</div>
+    <div class="hint-ua">🇺🇦 З’єднай початок речення з кінцем.</div>
+    <div class="match-grid" id="matchGrid"></div>
+    <div class="feedback" id="fb-match"></div>
+  </div>
+
+  <!-- EX 6 Collocations -->
+  <div class="section">
+    <h2><span class="badge">6</span> Collocations</h2>
+    <div class="aim">Complete the collocations. First and last letters are given. (5 points)</div>
+    <div class="hint-ua">🇺🇦 Допиши слова. Перша і остання літери вже є.</div>
+    <div id="collItems"></div>
+  </div>
+
+  <div style="text-align:center;margin:18px 0">
+    <button class="btn btn-primary" style="font-size:1rem;padding:12px 24px" onclick="calculateScore()">Check all & see my score</button>
+  </div>
+
+  <div class="score-box" id="scoreBox">
+    <div>Your total score</div>
+    <div class="score-num" id="scoreNum">0 / 26</div>
+    <div class="score-pct" id="scorePct">0%</div>
+    <div class="breakdown" id="breakdown"></div>
+    <div id="scoreMsg" style="margin-top:10px;font-weight:600"></div>
+  </div>
+
+  <footer>Focus 2 · Unit 4/4 Homework</footer>
+</div>
+
+<script>
+const hw = {
+  title: {
+    options: ["England’s Shyest Man", "England’s Most Unusual Duke", "England’s Strangest House"],
+    answer: 1
+  },
+
+  gaps: {
+    sentences: [
+      { id: "A", text: "Instead, he communicated with them by ringing a bell and leaving notes in special boxes." },
+      { id: "B", text: "He had another beautiful house in London and sometimes stayed there." },
+      { id: "C", text: "A third unusual thing about him was that he hated all kinds of dancing." },
+      { id: "D", text: "For example, he gave each servant an umbrella and bought horses for them to ride through the gardens and in the tunnels under his house." },
+      { id: "E", text: "He often wore two or more coats at the same time and a very strange hat – it was nearly a metre tall." },
+      { id: "F", text: "For instance, he built an underground ballroom with space for 2,000 guests, but he never used it because he was too shy to invite anyone." }
+    ],
+    // correct mapping for gaps 1-5
+    answers: ["E", "A", "F", "B", "D"]  // gap1=E, gap2=A, gap3=F, gap4=B, gap5=D  (C is extra)
+  },
+
+  comp: [
+    { q: "What was unusual about the Duke’s hat?", options: ["It was very expensive", "It was nearly a metre tall", "It was made of gold"], answer: 1 },
+    { q: "Why did he write notes to his servants?", options: ["He was too shy to talk to them", "He couldn’t speak English", "He was always travelling"], answer: 0 },
+    { q: "How did his servants deliver his food?", options: ["By horse", "On a mini-train / mini-railway", "By post"], answer: 1 },
+    { q: "Why was the underground ballroom never used?", options: ["It was too small", "He was too shy to invite anyone", "It was always wet"], answer: 1 },
+    { q: "How long was the roof of the riding school?", options: ["About 50 metres", "Over 100 metres", "Over 1 kilometre"], answer: 1 }
+  ],
+
+  landscape: [
+    { sentence: "I fell out of a ______ in my garden when I was younger and broke my arm.", answer: "treehouse" },
+    { sentence: "In some countries, they build houses on ______ to protect them from floods.", answer: "stilts" },
+    { sentence: "Europe’s largest ______ is actually in South America in French Guiana.", answer: "rainforest" },
+    { sentence: "Mauna Loa, Hawaii, is the world’s largest ______. It’s also one of the most active.", answer: "volcano" },
+    { sentence: "The ______ of Machu Picchu are one of the most famous historical places in the world.", answer: "ruins" }
+  ],
+
+  matching: [
+    { left: "I really don’t like such hot", right: "and humid weather." },
+    { left: "There are a lot of traffic", right: "jams in my city." },
+    { left: "Good bars and restaurants attract", right: "visitors to the city centre." },
+    { left: "Guangzhou is one of the main trading", right: "centres in China." },
+    { left: "There are plenty of historic", right: "monuments worth seeing in Venice." }
+  ],
+
+  collocations: [
+    { before: "The Daintree is a d", after: "e rainforest in the north-east of Australia.", answer: "ens", full: "dense" },
+    { before: "There are plenty of h", after: "t s", after2: "s in Europe. The most famous is the Blue Lagoon.", answer: "o", answer2: "pring", full: "hot springs" },
+    { before: "Cantabria in northern Spain is famous for its l", after: "h vegetation.", answer: "us", full: "lush" },
+    { before: "Mount Tambora is the world’s largest volcanic c", after: "r.", answer: "rate", full: "crater" },
+    { before: "The Lut Desert is the hottest place on Earth because of the s", after: "g temperatures.", answer: "corchin", full: "scorching" }
+  ]
+};
+
+const results = { title: 0, gaps: 0, comp: 0, land: 0, match: 0, coll: 0 };
+let matchSelected = null;
+let matchLeft = 0;
+
+function init() {
+  buildTitle();
+  buildGaps();
+  buildComp();
+  buildLand();
+  buildMatching();
+  buildColl();
+}
+
+function buildTitle() {
+  const box = document.getElementById("titleItems");
+  hw.title.options.forEach((o, i) => {
+    box.innerHTML += `<button class="mc-option" data-ex="title" data-i="0" data-oi="${i}" onclick="selMC(this)">${i+1}. ${o}</button>`;
+  });
+  box.innerHTML += `<div class="feedback" id="fb-title-0"></div>
+    <div class="btn-row"><button class="btn btn-outline" onclick="checkTitle()">Check</button></div>`;
+}
+
+function checkTitle() {
+  const sel = document.querySelector(`.mc-option[data-ex="title"].selected`);
+  if (!sel) return;
+  const oi = +sel.dataset.oi;
+  const fb = document.getElementById("fb-title-0");
+  if (oi === hw.title.answer) {
+    fb.className = "feedback correct";
+    fb.textContent = "✓ Correct!";
+    sel.classList.add("correct-ans");
+    results.title = 1;
+  } else {
+    fb.className = "feedback wrong";
+    fb.textContent = "✗ Wrong";
+    sel.classList.add("wrong-ans");
+    results.title = 0;
+  }
+}
+
+function buildGaps() {
+  const box = document.getElementById("gapTextItems");
+  let html = `<p style="margin-bottom:8px;font-size:0.88rem"><strong>Sentences:</strong></p>`;
+  hw.gaps.sentences.forEach(s => {
+    html += `<div style="margin:4px 0;padding:6px 8px;background:#F5F5F5;border-radius:6px;font-size:0.86rem"><strong>${s.id}.</strong> ${s.text}</div>`;
+  });
+  html += `<p style="margin:12px 0 6px;font-size:0.88rem"><strong>Gaps 1–5:</strong></p>`;
+  for (let i = 0; i < 5; i++) {
+    html += `<div style="margin:10px 0">
+      <div><span class="q-num">${i+1}</span>Choose sentence for gap ${i+1}</div>
+      <select id="gap-sel-${i}" style="margin-top:4px;padding:6px;border-radius:6px;border:2px solid var(--border);font-size:0.9rem">
+        <option value="">— choose —</option>
+        ${hw.gaps.sentences.map(s => `<option value="${s.id}">${s.id}</option>`).join("")}
+      </select>
+      <div class="feedback" id="fb-gap-${i}"></div>
+      <div class="btn-row"><button class="btn btn-outline" onclick="checkGap(${i})">Check</button></div>
+    </div>`;
+  }
+  box.innerHTML = html;
+}
+
+function checkGap(i) {
+  const sel = document.getElementById("gap-sel-" + i);
+  const user = sel.value;
+  const correct = hw.gaps.answers[i];
+  const fb = document.getElementById("fb-gap-" + i);
+  if (user === correct) {
+    fb.className = "feedback correct";
+    fb.textContent = "✓ Correct!";
+  } else {
+    fb.className = "feedback wrong";
+    fb.textContent = "✗ Wrong";
+  }
+  results.gaps = 0;
+  for (let j = 0; j < 5; j++) {
+    const fbj = document.getElementById("fb-gap-" + j);
+    if (fbj && fbj.classList.contains("correct")) results.gaps++;
+  }
+}
+
+function buildComp() {
+  const box = document.getElementById("compItems");
+  hw.comp.forEach((item, i) => {
+    let opts = item.options.map((o, oi) =>
+      `<button class="mc-option" data-ex="comp" data-i="${i}" data-oi="${oi}" onclick="selMC(this)">${String.fromCharCode(65+oi)}. ${o}</button>`
+    ).join("");
+    box.innerHTML += `<div style="margin:10px 0"><div><span class="q-num">${i+1}</span>${item.q}</div>${opts}
+      <div class="feedback" id="fb-comp-${i}"></div>
+      <div class="btn-row"><button class="btn btn-outline" onclick="checkComp(${i})">Check</button></div></div>`;
+  });
+}
+
+function checkComp(i) {
+  const sel = document.querySelector(`.mc-option[data-ex="comp"][data-i="${i}"].selected`);
+  if (!sel) return;
+  const oi = +sel.dataset.oi;
+  const fb = document.getElementById("fb-comp-" + i);
+  if (oi === hw.comp[i].answer) {
+    fb.className = "feedback correct";
+    fb.textContent = "✓ Correct!";
+    sel.classList.add("correct-ans");
+  } else {
+    fb.className = "feedback wrong";
+    fb.textContent = "✗ Wrong";
+    sel.classList.add("wrong-ans");
+  }
+  results.comp = 0;
+  for (let j = 0; j < 5; j++) {
+    const fbj = document.getElementById("fb-comp-" + j);
+    if (fbj && fbj.classList.contains("correct")) results.comp++;
+  }
+}
+
+function buildLand() {
+  const box = document.getElementById("landItems");
+  hw.landscape.forEach((item, i) => {
+    const parts = item.sentence.split("______");
+    box.innerHTML += `<div style="margin:10px 0">
+      <div><span class="q-num">${i+1}</span>${parts[0]}<input class="gap-input" id="land-${i}" data-answer="${item.answer}">${parts[1]||""}</div>
+      <div class="feedback" id="fb-land-${i}"></div>
+      <div class="btn-row"><button class="btn btn-outline" onclick="checkLand(${i})">Check</button></div></div>`;
+  });
+}
+
+function checkLand(i) {
+  const input = document.getElementById("land-" + i);
+  const user = input.value.trim().toLowerCase();
+  const correct = input.dataset.answer.toLowerCase();
+  const fb = document.getElementById("fb-land-" + i);
+  if (user === correct) {
+    fb.className = "feedback correct";
+    fb.textContent = "✓ Correct!";
+  } else {
+    fb.className = "feedback wrong";
+    fb.textContent = "✗ Wrong";
+  }
+  results.land = 0;
+  for (let j = 0; j < 5; j++) {
+    const fbj = document.getElementById("fb-land-" + j);
+    if (fbj && fbj.classList.contains("correct")) results.land++;
+  }
+}
+
+function buildMatching() {
+  const grid = document.getElementById("matchGrid");
+  const pairs = hw.matching;
+  matchLeft = pairs.length;
+  const lefts = pairs.map((p, i) => ({ text: p.left, id: i, type: "L" }));
+  const rights = pairs.map((p, i) => ({ text: p.right, id: i, type: "R" }));
+  for (let i = rights.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [rights[i], rights[j]] = [rights[j], rights[i]];
+  }
+  [...lefts, ...rights].forEach(item => {
+    const el = document.createElement("div");
+    el.className = "match-item";
+    el.textContent = item.text;
+    el.dataset.id = item.id;
+    el.dataset.type = item.type;
+    el.onclick = () => onMatch(el);
+    grid.appendChild(el);
+  });
+}
+
+function onMatch(el) {
+  if (el.classList.contains("matched")) return;
+  if (!matchSelected) { matchSelected = el; el.classList.add("selected"); return; }
+  if (matchSelected === el) { el.classList.remove("selected"); matchSelected = null; return; }
+  if (matchSelected.dataset.type === el.dataset.type) {
+    matchSelected.classList.remove("selected"); matchSelected = el; el.classList.add("selected"); return;
+  }
+  if (matchSelected.dataset.id === el.dataset.id) {
+    matchSelected.classList.remove("selected");
+    matchSelected.classList.add("matched");
+    el.classList.add("matched");
+    matchSelected = null;
+    matchLeft--;
+    results.match = 5 - matchLeft;
+    if (matchLeft === 0) {
+      document.getElementById("fb-match").className = "feedback correct";
+      document.getElementById("fb-match").textContent = "✓ All matched!";
+    }
+  } else {
+    matchSelected.classList.add("wrong-temp");
+    el.classList.add("wrong-temp");
+    setTimeout(() => {
+      matchSelected.classList.remove("selected", "wrong-temp");
+      el.classList.remove("wrong-temp");
+      matchSelected = null;
+    }, 450);
+  }
+}
+
+function buildColl() {
+  const box = document.getElementById("collItems");
+  hw.collocations.forEach((item, i) => {
+    let extra = item.after2 ? `<input class="gap-input" id="coll2-${i}" data-answer="${item.answer2}" style="min-width:70px">${item.after2}` : "";
+    box.innerHTML += `<div style="margin:10px 0">
+      <div><span class="q-num">${i+1}</span>${item.before}<input class="gap-input" id="coll-${i}" data-answer="${item.answer}" style="min-width:70px">${item.after}${extra}</div>
+      <div class="feedback" id="fb-coll-${i}"></div>
+      <div class="btn-row"><button class="btn btn-outline" onclick="checkColl(${i})">Check</button></div></div>`;
+  });
+}
+
+function checkColl(i) {
+  const input = document.getElementById("coll-" + i);
+  const user = input.value.trim().toLowerCase();
+  const correct = input.dataset.answer.toLowerCase();
+  let ok = user === correct;
+  if (hw.collocations[i].answer2) {
+    const input2 = document.getElementById("coll2-" + i);
+    const user2 = input2.value.trim().toLowerCase();
+    ok = ok && user2 === hw.collocations[i].answer2.toLowerCase();
+  }
+  const fb = document.getElementById("fb-coll-" + i);
+  if (ok) {
+    fb.className = "feedback correct";
+    fb.textContent = "✓ Correct!";
+  } else {
+    fb.className = "feedback wrong";
+    fb.textContent = "✗ Wrong";
+  }
+  results.coll = 0;
+  for (let j = 0; j < 5; j++) {
+    const fbj = document.getElementById("fb-coll-" + j);
+    if (fbj && fbj.classList.contains("correct")) results.coll++;
+  }
+}
+
+function selMC(btn) {
+  const i = btn.dataset.i;
+  const ex = btn.dataset.ex;
+  document.querySelectorAll(`.mc-option[data-ex="${ex}"][data-i="${i}"]`).forEach(b => b.classList.remove("selected"));
+  btn.classList.add("selected");
+}
+
+function calculateScore() {
+  results.match = 5 - matchLeft;
+  // refresh others
+  results.gaps = 0;
+  for (let j = 0; j < 5; j++) {
+    const fbj = document.getElementById("fb-gap-" + j);
+    if (fbj && fbj.classList.contains("correct")) results.gaps++;
+  }
+  results.comp = 0;
+  for (let j = 0; j < 5; j++) {
+    const fbj = document.getElementById("fb-comp-" + j);
+    if (fbj && fbj.classList.contains("correct")) results.comp++;
+  }
+  results.land = 0;
+  for (let j = 0; j < 5; j++) {
+    const fbj = document.getElementById("fb-land-" + j);
+    if (fbj && fbj.classList.contains("correct")) results.land++;
+  }
+  results.coll = 0;
+  for (let j = 0; j < 5; j++) {
+    const fbj = document.getElementById("fb-coll-" + j);
+    if (fbj && fbj.classList.contains("correct")) results.coll++;
+  }
+
+  const total = results.title + results.gaps + results.comp + results.land + results.match + results.coll;
+  const max = 26;
+  const pct = Math.round((total / max) * 100);
+
+  document.getElementById("scoreNum").textContent = `${total} / ${max}`;
+  document.getElementById("scorePct").textContent = `${pct}%`;
+  document.getElementById("breakdown").innerHTML = `
+    <div>1. Best title: <strong>${results.title}/1</strong></div>
+    <div>2. Complete the gaps: <strong>${results.gaps}/5</strong></div>
+    <div>3. Reading questions: <strong>${results.comp}/5</strong></div>
+    <div>4. Landscape features: <strong>${results.land}/5</strong></div>
+    <div>5. Describing places (match): <strong>${results.match}/5</strong></div>
+    <div>6. Collocations: <strong>${results.coll}/5</strong></div>`;
+
+  let msg = "";
+  if (pct >= 90) msg = "Excellent work! 🌟";
+  else if (pct >= 70) msg = "Good job! Check the ones you missed.";
+  else if (pct >= 50) msg = "Not bad – review Unit 4 vocabulary.";
+  else msg = "Try the exercises again and look at the Student’s Book.";
+  document.getElementById("scoreMsg").textContent = msg;
+
+  const box = document.getElementById("scoreBox");
+  box.classList.add("visible");
+  box.scrollIntoView({ behavior: "smooth" });
+}
+
+init();
+</script>
+</body>
+</html>
