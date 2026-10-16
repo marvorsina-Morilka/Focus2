@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Focus 2 · Unit 2/1 h/w</title>
+<style>
+  :root {
+    --green: #2E7D32;
+    --green-light: #4CAF50;
+    --green-dark: #1B5E20;
+    --orange: #F57C00;
+    --orange-light: #FF9800;
+    --bg: #F5F7FA;
+    --text: #212121;
+    --muted: #616161;
+    --border: #E0E0E0;
+    --success: #2E7D32;
+    --error: #C62828;
+    --radius: 12px;
+    --shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    font-size: 16.5px;
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+  .app { max-width: 820px; margin: 0 auto; padding: 16px; }
+  header {
+    background: linear-gradient(135deg, var(--green-dark), var(--green));
+    color: white;
+    padding: 18px 20px;
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+  }
+  header h1 { font-size: 1.3rem; margin-bottom: 4px; }
+  header .meta { font-size: 0.9rem; opacity: 0.9; }
+  .section {
+    background: white;
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+  }
+  .section h2 {
+    color: var(--green-dark);
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .badge {
+    background: var(--orange);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 99px;
+  }
+  .aim { color: var(--muted); font-size: 0.85rem; margin-bottom: 10px; }
+  .hint-ua {
+    background: #FFF8E1;
+    border-left: 4px solid var(--orange);
+    padding: 7px 10px;
+    margin: 6px 0 10px;
+    font-size: 0.84rem;
+    color: #5D4037;
+    border-radius: 0 8px 8px 0;
+  }
+  .q-num {
+    display: inline-block;
+    background: var(--green);
+    color: white;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 22px;
+    font-weight: 700;
+    font-size: 0.78rem;
+    margin-right: 6px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 9px 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-primary { background: var(--green); color: white; }
+  .btn-outline { background: white; border: 2px solid var(--green); color: var(--green); }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 8px; }
+  .feedback {
+    margin-top: 5px;
+    padding: 6px 9px;
+    border-radius: 8px;
+    font-weight: 600;
+    display: none;
+    font-size: 0.86rem;
+  }
+  .feedback.correct { background: #E8F5E9; color: var(--success); display: block; }
+  .feedback.wrong { background: #FFEBEE; color: var(--error); display: block; }
+  .gap-input {
+    border: none;
+    border-bottom: 2px solid var(--orange);
+    background: #FFF8E1;
+    padding: 2px 6px;
+    font-size: 0.95rem;
+    min-width: 100px;
+    text-align: center;
+    border-radius: 4px;
+  }
+  .mc-option {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 9px 11px;
+    margin: 4px 0;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    background: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+  .mc-option.selected { border-color: var(--orange); background: #FFF3E0; }
+  .mc-option.correct-ans { border-color: var(--success); background: #E8F5E9; }
+  .mc-option.wrong-ans { border-color: var(--error); background: #FFEBEE; }
+  .word-bank {
+    background: #E8F5E9;
+    padding: 8px;
+    border-radius: 8px;
+    margin: 6px 0;
+    font-weight: 600;
+    line-height: 1.6;
+    font-size: 0.86rem;
+  }
+  .score-box {
+    background: linear-gradient(135deg, #E8F5E9, #FFF3E0);
+    border-radius: 12px;
+    padding: 18px;
+    text-align: center;
+    margin-top: 16px;
+    display: none;
+    border: 2px solid var(--green-light);
+  }
+  .score-box.visible { display: block; }
+  .score-num { font-size: 2.2rem; font-weight: 800; color: var(--green-dark); }
+  .score-pct { font-size: 1.2rem; color: var(--orange); font-weight: 700; margin: 4px 0 10px; }
+  .breakdown { text-align: left; margin-top: 10px; font-size: 0.9rem; }
+  .breakdown div { padding: 4px 0; border-bottom: 1px solid #C8E6C9; }
+  footer { text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 18px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>Focus 2 · Unit 2/1 h/w</h1>
+    <div class="meta">Science and technology · Online · Phones and computers · Word building · Collocations</div>
+  </header>
+
+  <!-- EX 1 Verbs -->
+  <div class="section">
+    <h2><span class="badge">1</span> Complete with the correct verb</h2>
+    <div class="aim">Use the verbs from the box. (5 points)</div>
+    <div class="word-bank">download · follow · go · post · update · visit</div>
+    <div class="hint-ua">🇺🇦 Впиши правильне дієслово у потрібній формі.</div>
+    <div id="verbItems"></div>
+  </div>
+
+  <!-- EX 2 Phrasal verb opposites -->
+  <div class="section">
+    <h2><span class="badge">2</span> Write the opposites</h2>
+    <div class="aim">Write the opposite phrasal verb. (3 points)</div>
+    <div class="hint-ua">🇺🇦 Напиши протилежний phrasal verb.</div>
+    <div id="oppItems"></div>
+  </div>
+
+  <!-- EX 3 Phrasal verbs in sentences -->
+  <div class="section">
+    <h2><span class="badge">3</span> Complete with phrasal verbs</h2>
+    <div class="aim">Use the phrasal verbs from Exercise 2. (3 points)</div>
+    <div id="phrItems"></div>
+  </div>
+
+  <!-- EX 4 Compound nouns / tech words -->
+  <div class="section">
+    <h2><span class="badge">4</span> Complete the compound nouns</h2>
+    <div class="aim">Write the missing letters. (6 points)</div>
+    <div class="hint-ua">🇺🇦 Допиши слова (перша і остання літери вже є).</div>
+    <div id="compItems"></div>
+  </div>
+
+  <!-- EX 5 Word building (jobs) -->
+  <div class="section">
+    <h2><span class="badge">5</span> Word building – jobs</h2>
+    <div class="aim">Complete with the correct form of the word in capitals. (5 points)</div>
+    <div class="hint-ua">🇺🇦 Утвори назву професії від слова ВЕЛИКИМИ літерами.</div>
+    <div id="jobItems"></div>
+  </div>
+
+  <!-- EX 6 Collocations -->
+  <div class="section">
+    <h2><span class="badge">6</span> Choose the correct verb</h2>
+    <div class="aim">Choose the correct collocation. (5 points)</div>
+    <div id="collItems"></div>
+  </div>
+
+  <!-- EX 7 Multiple choice -->
+  <div class="section">
+    <h2><span class="badge">7</span> Choose the correct answer A–C</h2>
+    <div class="aim">Choose the best option. (8 points)</div>
+    <div id="mcItems"></div>
+  </div>
+
+  <div style="text-align:center;margin:18px 0">
+    <button class="btn btn-primary" style="font-size:1rem;padding:12px 24px" onclick="calculateScore()">Check all & see my score</button>
+  </div>
+
+  <div class="score-box" id="scoreBox">
+    <div>Your total score</div>
+    <div class="score-num" id="scoreNum">0 / 35</div>
+    <div class="score-pct" id="scorePct">0%</div>
+    <div class="breakdown" id="breakdown"></div>
+    <div id="scoreMsg" style="margin-top:10px;font-weight:600"></div>
+  </div>
+
+  <footer>Focus 2 · Unit 2/1 Homework · Science and technology</footer>
+</div>
+
+<script>
+const hw = {
+  verbs: [
+    { q: "I don’t understand why so many people ______ celebrities on Twitter.", answer: "follow" },
+    { q: "Akito ______ online the moment she wakes up to check her social media messages.", answer: "goes" },
+    { q: "I’ve never ______ this website before. It has some excellent information on it!", answer: "visited" },
+    { q: "It’s very important to ______ your social media profile. Then everybody has the latest information about you.", answer: "update" },
+    { q: "Dean is the only person I know that still buys CDs. Most people ______ music on computers now.", answer: "download" }
+  ],
+  opposites: [
+    { word: "turn up (the volume)", answer: "turn down" },
+    { word: "turn on", answer: "turn off" },
+    { word: "log on", answer: "log off" }
+  ],
+  phrasal: [
+    { q: "I can’t study with that loud music playing. Please will you ______ the volume.", answer: "turn down" },
+    { q: "Use your username and password to ______ to the website.", answer: "log on" },
+    { q: "______ the TV before you go to bed.", answer: "turn off" }
+  ],
+  compounds: [
+    { before: "We clean all kinds of computers including desktop computers and l", after: "s.", answer: "aptop", full: "laptops" },
+    { before: "We have sent you an email with your u", after: "e and other login details.", answer: "sernam", full: "username" },
+    { before: "Choose a p", after: "d of nine characters or more.", answer: "asswor", full: "password" },
+    { before: "You can use a l", after: "r p", after2: "r to print your personal daily wordlist.", answer: "ase", answer2: "rinte", full: "laser printer" },
+    { before: "To use the Internet you need to have a w", after: "b b", after2: "r.", answer: "e", answer2: "rowse", full: "web browser" },
+    { before: "Most young people send t", after: "t m", after2: "s to family and friends.", answer: "ex", answer2: "essage", full: "text messages" }
+  ],
+  jobs: [
+    { q: "Galileo Galilei, a famous ______, was the first person to see the rings of Saturn. (ASTRONOMY)", answer: "astronomer" },
+    { q: "The famous ______ Isaac Newton was born on Christmas Day 1642. (PHYSICS)", answer: "physicist" },
+    { q: "Larry Page, the ______ who helped start the company Google, is now worth $44.5 billion. (COMPUTER SCIENCE)", answer: "computer scientist" },
+    { q: "Alfred Nobel was a ______ and he is famous for making dynamite. (CHEMISTRY)", answer: "chemist" },
+    { q: "Euclid was a ______ and many people call him the Father of Geometry. (MATHEMATICS)", answer: "mathematician" }
+  ],
+  collocations: [
+    { q: "When you ______ an experiment, it’s not always a success.", options: ["do", "make"], answer: 0 },
+    { q: "I prefer ______ specimens. It’s better than working in the laboratory.", options: ["collecting", "taking"], answer: 0 },
+    { q: "Was it Marie Curie that ______ radium?", options: ["invented", "discovered"], answer: 1 },
+    { q: "The Scottish man, John Logie Baird, ______ television in 1925.", options: ["invented", "discovered"], answer: 0 },
+    { q: "Please ______ the important measurements this afternoon, Adam.", options: ["take", "do"], answer: 0 }
+  ],
+  mc: [
+    { q: "I can’t enter the website. Something is wrong. Am I using the correct ______?", options: ["keyboard", "password", "text message"], answer: 1 },
+    { q: "I’ve started using a new ______. I type in what I’m looking for on the Internet and it finds the websites I want really quickly.", options: ["broadband", "username", "search engine"], answer: 2 },
+    { q: "Sarah spends a lot of time ______ specimens in the countryside. She truly enjoys being a biologist.", options: ["collecting", "developing", "inventing"], answer: 0 },
+    { q: "Kevin wants to be a computer ______ when he is older.", options: ["science", "scientist", "biologist"], answer: 1 },
+    { q: "Ben emailed the document to me. I made a copy of it on paper with the ______ for you.", options: ["keyboard", "web browser", "laser printer"], answer: 2 },
+    { q: "I’m busy at the moment. I’m ______ notes on this film about astronomy.", options: ["making", "doing", "taking"], answer: 2 },
+    { q: "Most people have a ______ Internet connection now because it’s fast.", options: ["web browser", "broadband", "desktop"], answer: 1 },
+    { q: "I need a new ______ for my desktop computer. The ‘Enter’ key doesn’t work.", options: ["keyboard", "laptop", "username"], answer: 0 }
+  ]
+};
+
+const results = { verb: 0, opp: 0, phr: 0, comp: 0, job: 0, coll: 0, mc: 0 };
+
+function init() {
+  buildVerbs();
+  buildOpp();
+  buildPhr();
+  buildComp();
+  buildJobs();
+  buildColl();
+  buildMC();
+}
+
+function buildVerbs() {
+  const box = document.getElementById("verbItems");
+  hw.verbs.forEach((item, i) => {
+    const parts = item.q.split("______");
+    box.innerHTML += `<div style="margin:8px 0">
+      <div><span class="q-num">${i+1}</span>${parts[0]}<input class="gap-input" id="verb-${i}" data-answer="${item.answer}">${parts[1]||""}</div>
+      <div class="feedback" id="fb-verb-${i}"></div>
+      <div class="btn-row"><button class="btn btn-outline" onclick="checkGap('verb',${i})">Check</button></div>
+    </div>`;
+  });
+}
+
+function buildOpp() {
+  const box = document.getElementById("oppItems");
+  hw.opposites.forEach((item, i) => {
+    box.innerHTML += `<div style="margin:8px 0">
+      <span class="q-num">${i+1}</span>${item.word} ≠ <input class="gap-input" id="opp-${i}" data-answer="${item.answer}" style="min-width:120px">
+      <div class="feedback" id="fb-opp-${i}"></div>
+      <div class="btn-row"><button class="btn btn-outline" onclick="checkGap('opp',${i})">Check</button></div>
+    </div>`;
+  });
+}
+
+function buildPhr() {
+  const box = document.getElementById("phrItems");
+  hw.phrasal.forEach((item, i) => {
+    const parts = item.q.split("______");
+    box.innerHTML += `<div style="margin:8px 0">
+      <div><span class="q-num">${i+1}</span>${parts[0]}<input class="gap-input" id="phr-${i}" data-answer="${item.answer}" style="min-width:110px">${parts[1]||""}</div>
+      <div class="feedback" id="fb-phr-${i}"></div>
+      <div class="btn-row"><button class="btn btn-outline" onclick="checkGap('phr',${i})">Check</button></div>
+    </div>`;
+  });
+}
+
+function buildComp() {
+  const box = document.getElementById("compItems");
+  hw.compounds.forEach((item, i) => {
+    let extra = "";
+    if (item.after2) {
+      extra = `<input class="gap-input" id="comp2-${i}" data-answer="${item.answer2}" style="min-width:70px">${item.after2}`;
+    }
+    box.innerHTML += `<div style="margin:8px 0">
+      <div><span class="q-num">${i+1}</span>${item.before}<input class="gap-input" id="comp-${i}" data-answer="${item.answer}" style="min-width:70px">${item.after}${extra}</div>
+      <div class="feedback" id="fb-comp-${i}"></div>
+      <div class="btn-row"><button class="btn btn-outline" onclick="checkComp(${i})">Check</button></div>
+    </div>`;
+  });
+}
+
+function buildJobs() {
+  const box = document.getElementById("jobItems");
+  hw.jobs.forEach((item, i) => {
+    const parts = item.q.split("______");
+    box.innerHTML += `<div style="margin:8px 0">
+      <div><span class="q-num">${i+1}</span>${parts[0]}<input class="gap-input" id="job-${i}" data-answer="${item.answer}" style="min-width:140px">${parts[1]||""}</div>
+      <div class="feedback" id="fb-job-${i}"></div>
+      <div class="btn-row"><button class="btn btn-outline" onclick="checkGap('job',${i})">Check</button></div>
+    </div>`;
+  });
+}
+
+function buildColl() {
+  const box = document.getElementById("collItems");
+  hw.collocations.forEach((item, i) => {
+    let opts = item.options.map((o, oi) =>
+      `<button class="mc-option" data-ex="coll" data-i="${i}" data-oi="${oi}" onclick="selMC(this)">${o}</button>`
+    ).join("");
+    box.innerHTML += `<div style="margin:10px 0"><div><span class="q-num">${i+1}</span>${item.q}</div>${opts}
+      <div class="feedback" id="fb-coll-${i}"></div>
+      <div class="btn-row"><button class="btn btn-outline" onclick="checkMC('coll',${i})">Check</button></div></div>`;
+  });
+}
+
+function buildMC() {
+  const box = document.getElementById("mcItems");
+  hw.mc.forEach((item, i) => {
+    let opts = item.options.map((o, oi) =>
+      `<button class="mc-option" data-ex="mc" data-i="${i}" data-oi="${oi}" onclick="selMC(this)">${String.fromCharCode(65+oi)}. ${o}</button>`
+    ).join("");
+    box.innerHTML += `<div style="margin:10px 0"><div><span class="q-num">${i+1}</span>${item.q}</div>${opts}
+      <div class="feedback" id="fb-mc-${i}"></div>
+      <div class="btn-row"><button class="btn btn-outline" onclick="checkMC('mc',${i})">Check</button></div></div>`;
+  });
+}
+
+function norm(s) {
+  return s.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+function checkGap(prefix, i) {
+  const input = document.getElementById(prefix + "-" + i);
+  const user = norm(input.value);
+  const correct = norm(input.dataset.answer);
+  const fb = document.getElementById("fb-" + prefix + "-" + i);
+  // accept common alternatives
+  let ok = user === correct;
+  if (prefix === "opp") {
+    if (i === 0 && (user === "turn down" || user === "turn the volume down")) ok = true;
+    if (i === 2 && (user === "log off" || user === "log out")) ok = true;
+  }
+  if (prefix === "phr") {
+    if (i === 1 && (user === "log on" || user === "log in")) ok = true;
+  }
+  if (prefix === "job") {
+    if (i === 2 && (user === "computer scientist" || user === "scientist")) ok = true;
+  }
+  if (ok) {
+    fb.className = "feedback correct";
+    fb.textContent = "✓ Correct!";
+  } else {
+    fb.className = "feedback wrong";
+    fb.textContent = "✗ Wrong";
+  }
+}
+
+function checkComp(i) {
+  const input = document.getElementById("comp-" + i);
+  const user = norm(input.value);
+  const correct = norm(input.dataset.answer);
+  let ok = user === correct || user === norm(hw.compounds[i].full);
+  if (hw.compounds[i].answer2) {
+    const input2 = document.getElementById("comp2-" + i);
+    const user2 = norm(input2.value);
+    ok = ok && (user2 === norm(hw.compounds[i].answer2));
+  }
+  const fb = document.getElementById("fb-comp-" + i);
+  if (ok) {
+    fb.className = "feedback correct";
+    fb.textContent = "✓ Correct!";
+  } else {
+    fb.className = "feedback wrong";
+    fb.textContent = "✗ Wrong";
+  }
+}
+
+function selMC(btn) {
+  const i = btn.dataset.i;
+  const ex = btn.dataset.ex;
+  document.querySelectorAll(`.mc-option[data-ex="${ex}"][data-i="${i}"]`).forEach(b => b.classList.remove("selected"));
+  btn.classList.add("selected");
+}
+
+function checkMC(ex, i) {
+  const sel = document.querySelector(`.mc-option[data-ex="${ex}"][data-i="${i}"].selected`);
+  if (!sel) return;
+  const oi = +sel.dataset.oi;
+  const data = ex === "coll" ? hw.collocations : hw.mc;
+  const fb = document.getElementById("fb-" + ex + "-" + i);
+  if (oi === data[i].answer) {
+    fb.className = "feedback correct";
+    fb.textContent = "✓ Correct!";
+    sel.classList.add("correct-ans");
+  } else {
+    fb.className = "feedback wrong";
+    fb.textContent = "✗ Wrong";
+    sel.classList.add("wrong-ans");
+  }
+}
+
+function countCorrect(prefix, total) {
+  let c = 0;
+  for (let i = 0; i < total; i++) {
+    const fb = document.getElementById("fb-" + prefix + "-" + i);
+    if (fb && fb.classList.contains("correct")) c++;
+  }
+  return c;
+}
+
+function calculateScore() {
+  results.verb = countCorrect("verb", 5);
+  results.opp = countCorrect("opp", 3);
+  results.phr = countCorrect("phr", 3);
+  results.comp = countCorrect("comp", 6);
+  results.job = countCorrect("job", 5);
+  results.coll = countCorrect("coll", 5);
+  results.mc = countCorrect("mc", 8);
+
+  const total = results.verb + results.opp + results.phr + results.comp + results.job + results.coll + results.mc;
+  const max = 35;
+  const pct = Math.round((total / max) * 100);
+
+  document.getElementById("scoreNum").textContent = `${total} / ${max}`;
+  document.getElementById("scorePct").textContent = `${pct}%`;
+  document.getElementById("breakdown").innerHTML = `
+    <div>1. Verbs (download, follow…): <strong>${results.verb}/5</strong></div>
+    <div>2. Phrasal verb opposites: <strong>${results.opp}/3</strong></div>
+    <div>3. Phrasal verbs in sentences: <strong>${results.phr}/3</strong></div>
+    <div>4. Compound nouns: <strong>${results.comp}/6</strong></div>
+    <div>5. Word building (jobs): <strong>${results.job}/5</strong></div>
+    <div>6. Collocations: <strong>${results.coll}/5</strong></div>
+    <div>7. Multiple choice: <strong>${results.mc}/8</strong></div>`;
+
+  let msg = "";
+  if (pct >= 90) msg = "Excellent work! 🌟";
+  else if (pct >= 70) msg = "Good job! Check the mistakes.";
+  else if (pct >= 50) msg = "Not bad – revise the vocabulary from Unit 2.";
+  else msg = "Look at Word Store 2A–2C again and try once more.";
+  document.getElementById("scoreMsg").textContent = msg;
+
+  const box = document.getElementById("scoreBox");
+  box.classList.add("visible");
+  box.scrollIntoView({ behavior: "smooth" });
+}
+
+init();
+</script>
+</body>
+</html>
