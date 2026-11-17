@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивні вправи: City Problems — Teenagers' Solutions</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --success: #16a34a;
+            --success-bg: #dcfce7;
+            --error: #dc2626;
+            --error-bg: #fee2e2;
+            --border: #e2e8f0;
+        }
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+        header {
+            background: var(--card);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 24px;
+            text-align: center;
+            border-top: 5px solid var(--primary);
+        }
+        h1 {
+            margin: 0 0 8px 0;
+            font-size: 1.6rem;
+            color: var(--primary);
+        }
+        p.subtitle {
+            margin: 0 0 16px 0;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+        .controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        button:hover {
+            background: var(--primary-hover);
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        button.secondary {
+            background: #e2e8f0;
+            color: var(--text);
+        }
+        button.secondary:hover {
+            background: #cbd5e1;
+        }
+        .score-bar {
+            background: var(--card);
+            padding: 14px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.04);
+            font-weight: 600;
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+            border: 1px solid var(--border);
+        }
+        .exercise-card {
+            background: var(--card);
+            padding: 20px 24px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            border: 1px solid var(--border);
+            transition: border-color 0.3s;
+        }
+        .exercise-card.correct-card {
+            border-left: 5px solid var(--success);
+        }
+        .exercise-card.wrong-card {
+            border-left: 5px solid var(--error);
+        }
+        .ex-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .ex-num {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .ex-type {
+            font-size: 0.8rem;
+            background: #eff6ff;
+            color: var(--primary);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .question-text {
+            font-size: 1.05rem;
+            font-weight: 500;
+            margin-bottom: 14px;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 10px;
+        }
+        .option-btn {
+            background: #f8fafc;
+            color: var(--text);
+            border: 2px solid var(--border);
+            text-align: left;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        .option-btn.selected-correct {
+            background: var(--success-bg);
+            border-color: var(--success);
+            color: #14532d;
+            font-weight: 600;
+        }
+        .option-btn.selected-wrong {
+            background: var(--error-bg);
+            border-color: var(--error);
+            color: #7f1d1d;
+        }
+        .option-btn:disabled {
+            cursor: default;
+        }
+        .feedback {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: none;
+        }
+        .feedback.show {
+            display: block;
+        }
+        .feedback.ok { color: var(--success); }
+        .feedback.err { color: var(--error); }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px 14px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+        }
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+        input[type="text"].correct-input {
+            border-color: var(--success);
+            background: var(--success-bg);
+        }
+        input[type="text"].wrong-input {
+            border-color: var(--error);
+            background: var(--error-bg);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Тренажер лексики: City Problems & Teenagers' Solutions</h1>
+        <p class="subtitle">16 інтерактивних вправ на переклад, підстановку в контекст та знання слів. Варіанти відповідей перемішуються автоматично!</p>
+        <div class="controls">
+            <button onclick="initQuiz()">🔄 Перемішати та почати заново</button>
+            <button class="secondary" onclick="showAllAnswers()">👁️ Показати всі відповіді</button>
+        </div>
+    </header>
+
+    <div class="score-bar">
+        <span>Виконано: <span id="answered-count">0</span> / <span id="total-count">16</span></span>
+        <span>Правильно: <span id="correct-count" style="color: var(--success);">0</span></span>
+    </div>
+
+    <div id="quiz-container"></div>
+</div>
+
+<script>
+const exercisesData = [
+    {
+        type: "Переклад (EN → UA)",
+        question: "Як перекладається словосполучення <b>«air pollution»</b>?",
+        options: ["Забруднення повітря", "Затори на дорогах", "Громадський транспорт", "Свіже повітря"],
+        answer: "Забруднення повітря",
+        hint: "Air — повітря, pollution — забруднення."
+    },
+    {
+        type: "Переклад (UA → EN)",
+        question: "Оберіть правильний переклад слова <b>«Винахід»</b>:",
+        options: ["Invention", "Competition", "Solution", "Education"],
+        answer: "Invention",
+        hint: "Від дієслова invent (винаходити)."
+    },
+    {
+        type: "Контекст (Вставте слово)",
+        question: "Ann soon _______ an interest in science and electronics.",
+        options: ["developed", "increased", "grew", "made"],
+        answer: "developed",
+        hint: "Сталий вираз: develop an interest (розвинути інтерес)."
+    },
+    {
+        type: "Контекст (Вставте слово)",
+        question: "Over a billion people in the world don't have _______ to electricity.",
+        options: ["access", "opportunity", "chance", "way"],
+        answer: "access",
+        hint: "Сталий вираз: have access to (мати доступ до чогось)."
+    },
+    {
+        type: "Переклад (EN → UA)",
+        question: "Що означає слово <b>«rubbish»</b>?",
+        options: ["Сміття", "Ліхтарик", "Бензин", "Приз"],
+        answer: "Сміття",
+        hint: "Енн робила іграшки зі сміття навколо будинку."
+    },
+    {
+        type: "Контекст (Вставте слово)",
+        question: "Ann's torch wasn't as powerful as a normal torch and only _______ a little light.",
+        options: ["produced", "brought", "achieved", "did"],
+        answer: "produced",
+        hint: "Ліхтарик виробляв (генерував) трохи світла."
+    },
+    {
+        type: "Переклад (UA → EN)",
+        question: "Як англійською буде <b>«Затори на дорогах»</b>?",
+        options: ["Traffic jams", "Main causes", "Petrol scooters", "Everyday problems"],
+        answer: "Traffic jams",
+        hint: "Traffic — рух, jams — затори/пробки."
+    },
+    {
+        type: "Контекст (Вставте слово)",
+        question: "She won a prize of $25,000 to _______ her education in the future.",
+        options: ["support", "carry", "keep", "own"],
+        answer: "support",
+        hint: "Підтримати її подальшу освіту."
+    },
+    {
+        type: "Переклад (EN → UA)",
+        question: "Перекладіть слово <b>«instead»</b>:",
+        options: ["Натомість / замість", "Звісно / звичайно", "У той час як", "Кілька / декілька"],
+        answer: "Натомість / замість",
+        hint: "У неї було мало іграшок. Натомість вона любила винаходити нові речі."
+    },
+    {
+        type: "Контекст (Вставте слово)",
+        question: "Ben was _______ at the air pollution in Beijing.",
+        options: ["shocked", "amazed", "successful", "powerful"],
+        answer: "shocked",
+        hint: "Бен був шокований забрудненням повітря."
+    },
+    {
+        type: "Переклад (UA → EN)",
+        question: "Оберіть переклад слова <b>«Ліхтарик»</b>:",
+        options: ["Torch", "Heat", "Scooter", "Motorbike"],
+        answer: "Torch",
+        hint: "Ann designed a torch that uses heat from a human hand."
+    },
+    {
+        type: "Переклад (EN → UA)",
+        question: "Що означає дієслово <b>«realised»</b>?",
+        options: ["Усвідомив / зрозумів", "Вирішив", "Завершив", "Пам'ятав"],
+        answer: "Усвідомив / зрозумів",
+        hint: "He soon realised one of the main causes."
+    },
+    {
+        type: "Контекст (Вставте слово)",
+        question: "Ann was _______ to discover that many people don't have electricity.",
+        options: ["amazed", "cheap", "lighter", "cleaner"],
+        answer: "amazed",
+        hint: "Вона була вражена, дізнавшись про це."
+    },
+    {
+        type: "Переклад (UA → EN)",
+        question: "Як перекладається <b>«Міжнародний конкурс / змагання»</b>?",
+        options: ["International competition", "Successful invention", "Everyday problem", "Home town"],
+        answer: "International competition",
+        hint: "International — міжнародний, competition — конкурс."
+    },
+    {
+        type: "Переклад (EN → UA)",
+        question: "Що означає вираз <b>«a few»</b>?",
+        options: ["Кілька / декілька", "У десять разів", "Такий же... як", "Будь-який"],
+        answer: "Кілька / декілька",
+        hint: "She only had a few toys to play with."
+    },
+    {
+        type: "Впишіть слово англійською",
+        inputMode: true,
+        question: "Напишіть англійською слово <b>«Бензин»</b> (використовувалось у тексті про скутери):",
+        answer: "petrol",
+        hint: "Починається на літеру «p», 6 літер."
+    }
+];
+
+let correctCount = 0;
+let answeredCount = 0;
+
+function shuffleArray(array) {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+function updateScore() {
+    document.getElementById('answered-count').textContent = answeredCount;
+    document.getElementById('correct-count').textContent = correctCount;
+    document.getElementById('total-count').textContent = exercisesData.length;
+}
+
+function initQuiz() {
+    correctCount = 0;
+    answeredCount = 0;
+    updateScore();
+
+    const container = document.getElementById('quiz-container');
+    container.innerHTML = '';
+
+    // Перемішуємо самі вправи або залишаємо порядок, але перемішуємо варіанти відповідей
+    const shuffledExercises = shuffleArray(exercisesData);
+
+    shuffledExercises.forEach((ex, index) => {
+        const card = document.createElement('div');
+        card.className = 'exercise-card';
+        card.id = `card-${index}`;
+
+        let contentHTML = `
+            <div class="ex-header">
+                <span class="ex-num">Вправа №${index + 1}</span>
+                <span class="ex-type">${ex.type}</span>
+            </div>
+            <div class="question-text">${ex.question}</div>
+        `;
+
+        if (ex.inputMode) {
+            contentHTML += `
+                <div class="input-group">
+                    <input type="text" id="input-${index}" placeholder="Введіть слово англійською..." onkeydown="if(event.key==='Enter') checkInput(${index}, '${ex.answer}')">
+                    <button id="btn-check-${index}" onclick="checkInput(${index}, '${ex.answer}')">Перевірити</button>
+                </div>
+            `;
+        } else {
+            const shuffledOptions = shuffleArray(ex.options);
+            contentHTML += `<div class="options-grid" id="options-${index}">`;
+            shuffledOptions.forEach(opt => {
+                const safeOpt = opt.replace(/'/g, "\'");
+                const safeAns = ex.answer.replace(/'/g, "\'");
+                contentHTML += `<button class="option-btn" onclick="checkOption(this, ${index}, '${safeOpt}', '${safeAns}')">${opt}</button>`;
+            });
+            contentHTML += `</div>`;
+        }
+
+        contentHTML += `<div class="feedback" id="feedback-${index}" data-answer="${ex.answer}" data-hint="${ex.hint}"></div>`;
+        card.innerHTML = contentHTML;
+        container.appendChild(card);
+    });
+}
+
+function checkOption(btn, index, selected, correct) {
+    const optionsDiv = document.getElementById(`options-${index}`);
+    const buttons = optionsDiv.querySelectorAll('button');
+    const card = document.getElementById(`card-${index}`);
+    const feedback = document.getElementById(`feedback-${index}`);
+
+    buttons.forEach(b => b.disabled = true);
+    answeredCount++;
+
+    if (selected === correct) {
+        btn.classList.add('selected-correct');
+        card.classList.add('correct-card');
+        feedback.textContent = "✓ Правильно! Чудова робота.";
+        feedback.className = "feedback show ok";
+        correctCount++;
+    } else {
+        btn.classList.add('selected-wrong');
+        card.classList.add('wrong-card');
+        buttons.forEach(b => {
+            if (b.textContent === correct) {
+                b.classList.add('selected-correct');
+            }
+        });
+        feedback.textContent = `✗ Неправильно. Правильна відповідь: «${correct}». (${feedback.dataset.hint})`;
+        feedback.className = "feedback show err";
+    }
+    updateScore();
+}
+
+function checkInput(index, correct) {
+    const input = document.getElementById(`input-${index}`);
+    const btn = document.getElementById(`btn-check-${index}`);
+    const card = document.getElementById(`card-${index}`);
+    const feedback = document.getElementById(`feedback-${index}`);
+
+    if (input.disabled) return;
+    const val = input.value.trim().toLowerCase();
+    if (!val) return;
+
+    input.disabled = true;
+    btn.disabled = true;
+    answeredCount++;
+
+    if (val === correct.toLowerCase()) {
+        input.classList.add('correct-input');
+        card.classList.add('correct-card');
+        feedback.textContent = "✓ Правильно!";
+        feedback.className = "feedback show ok";
+        correctCount++;
+    } else {
+        input.classList.add('wrong-input');
+        card.classList.add('wrong-card');
+        feedback.textContent = `✗ Неправильно. Правильна відповідь: «${correct}». (${feedback.dataset.hint})`;
+        feedback.className = "feedback show err";
+    }
+    updateScore();
+}
+
+function showAllAnswers() {
+    exercisesData.forEach((_, index) => {
+        const card = document.getElementById(`card-${index}`);
+        if (!card) return;
+        const feedback = document.getElementById(`feedback-${index}`);
+        const correct = feedback.dataset.answer;
+
+        const optionsDiv = document.getElementById(`options-${index}`);
+        if (optionsDiv) {
+            const buttons = optionsDiv.querySelectorAll('button');
+            buttons.forEach(b => {
+                b.disabled = true;
+                if (b.textContent === correct) {
+                    b.classList.add('selected-correct');
+                }
+            });
+        }
+
+        const input = document.getElementById(`input-${index}`);
+        if (input && !input.disabled) {
+            input.value = correct;
+            input.disabled = true;
+            input.classList.add('correct-input');
+            const btn = document.getElementById(`btn-check-${index}`);
+            if (btn) btn.disabled = true;
+        }
+
+        if (!feedback.classList.contains('show')) {
+            feedback.textContent = `Відповідь: «${correct}» — ${feedback.dataset.hint}`;
+            feedback.className = "feedback show ok";
+        }
+    });
+}
+
+window.onload = initQuiz;
+</script>
+
+</body>
+</html>
